@@ -5,13 +5,13 @@
 
 // External
 #include <RcppEigen.h>
-#include "../external/Eigen/Dense"
+//#include "../external/Eigen/Dense"
 #include "../external/adept.h"
 #include "../external/adept_source.h"
 #include <math.h>
 //#include <string>
 
-using namespace Eigen;
+//using namespace Eigen;
 using namespace std;
 using namespace Rcpp;
 using adept::adouble;
