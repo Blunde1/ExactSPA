@@ -2,7 +2,7 @@ library(ExactSPA)
 
 df = 100
 ncp = 40
-n = 1000
+n = 2000
 x <- sort(rchisq(n, df, ncp))
 hist(x, freq=F)
 curve(dchisq(x, df, ncp), add=TRUE)

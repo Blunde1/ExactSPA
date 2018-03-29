@@ -2,9 +2,8 @@ library(ExactSPA)
 library(Quandl)
 
 # Load data
-start_date <- "2003-01-01"; end_training <- "2005-01-01"; 
+start_date <- "2003-01-01"; end_training <- "2005-01-01";
 DJIA<-Quandl("BCB/UDJIAD1",trim_start=start_date, trim_end=end_training)
-#DJIA <- Quandl("BCB/UDJIAD1")
 DJIA <- DJIA[rev(rownames(DJIA)),]
 plot(DJIA,type="l")
 Xt=log(DJIA$Value)
