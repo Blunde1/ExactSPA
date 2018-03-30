@@ -32,6 +32,12 @@ typedef adept::adouble adtype;
 #include "noncentral_chi_squared/Fourier_inversion_nchisq.hpp"
 #include "noncentral_chi_squared/saddlepoint_approximation_nchisq.hpp"
 
+// Normal inverse Gaussian
+#include "normal_inverse_gaussian/optimization_nig.hpp"
+#include "normal_inverse_gaussian/transform_functions_nig.hpp"
+#include "normal_inverse_gaussian/Fourier_inversion_nig.hpp"
+#include "normal_inverse_gaussian/saddlepoint_approximation_nig.hpp"
+
 // Tweedie
 
 
