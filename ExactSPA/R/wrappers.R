@@ -52,3 +52,22 @@ nll_grad_nchisq <- function(par, X){
         res$ldf_grad, res$lncp_grad
     )
 }
+
+nll_fun_nig <- function(par, X){
+    lchi = par[1]
+    lpsi = par[2]
+    mu = par[3]
+    gamma = par[4]
+    nll_nig(X, lchi, lpsi, mu, gamma, 100, 512)$nll
+}
+
+nll_grad_nig <- function(par, X){
+    lchi = par[1]
+    lpsi = par[2]
+    mu = par[3]
+    gamma = par[4]
+    res <- nll_nig(X, lchi, lpsi, mu, gamma, 100, 512)
+    c(
+        res$lchi_grad, res$lpsi_grad, res$mu_grad, res$gamma_grad
+    )
+}
