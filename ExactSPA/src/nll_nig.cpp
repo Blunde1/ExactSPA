@@ -57,7 +57,7 @@ T sp_newton_opt(T s_start, T x, cgf_nig<T>& cgf, bool check_values=true, int max
                 s_old = s_start;
                 i=0;
             }
-            if(abs(s_new - s_old) <= EPS){
+            else if(abs(s_new - s_old) <= EPS){
                 break;
             } else if(cgf(s_new) <= (cgf(s_old) + f_eps) ){
                 s_old = s_new;
