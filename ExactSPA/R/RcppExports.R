@@ -9,3 +9,7 @@ nll_nchisq <- function(X, ldf, lncp, length, n) {
     .Call(`_ExactSPA_nll_nchisq`, X, ldf, lncp, length, n)
 }
 
+nll_nig <- function(X, lchi, lpsi, mu, gamma, length, n) {
+    .Call(`_ExactSPA_nll_nig`, X, lchi, lpsi, mu, gamma, length, n)
+}
+

@@ -40,10 +40,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// nll_nig
+Rcpp::List nll_nig(NumericVector X, double lchi, double lpsi, double mu, double gamma, double length, double n);
+RcppExport SEXP _ExactSPA_nll_nig(SEXP XSEXP, SEXP lchiSEXP, SEXP lpsiSEXP, SEXP muSEXP, SEXP gammaSEXP, SEXP lengthSEXP, SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type X(XSEXP);
+    Rcpp::traits::input_parameter< double >::type lchi(lchiSEXP);
+    Rcpp::traits::input_parameter< double >::type lpsi(lpsiSEXP);
+    Rcpp::traits::input_parameter< double >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< double >::type gamma(gammaSEXP);
+    Rcpp::traits::input_parameter< double >::type length(lengthSEXP);
+    Rcpp::traits::input_parameter< double >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(nll_nig(X, lchi, lpsi, mu, gamma, length, n));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ExactSPA_nll_mjd", (DL_FUNC) &_ExactSPA_nll_mjd, 9},
     {"_ExactSPA_nll_nchisq", (DL_FUNC) &_ExactSPA_nll_nchisq, 5},
+    {"_ExactSPA_nll_nig", (DL_FUNC) &_ExactSPA_nll_nig, 7},
     {NULL, NULL, 0}
 };
 
