@@ -9,9 +9,10 @@ dt <- time/N
 
 
 # Simulate mjd ####
-setwd("C:/Users/Berent/Projects/it-ift/implementation/simulation_experiment/mjd")
-source("../../simulation/Simulation_MJD_3.R")
-X<-mjd_process(N,time,x0=par["x0"],
+#setwd("C:/Users/Berent/Projects/it-ift/implementation/simulation_experiment/mjd")
+#source("../../simulation/Simulation_MJD_3.R")
+library(ExactSPA)
+X<-rMJD(N,time,x0=par["x0"],
                            r=par["r"], sigma=exp(par["lsigma"]), jump_intensity = exp(par["llambda"]),
                            mu=par["mu"], nu=exp(par["lnu"]),
                            seed=123)
@@ -33,7 +34,7 @@ time <- 4
 N <- time*250
 par <- c(r=0.08, lsigma=log(0.1), llambda=log(100), mu=-0.001, lnu=log(0.015), x0=10) #jump intensity usually 100
 for(i in 1:length(seeds)){
-    mjd.list[[i]]<-mjd_process(N,time,x0=par["x0"],
+    mjd.list[[i]]<-rMJD(N,time,x0=par["x0"],
                                r=par["r"], sigma=exp(par["lsigma"]), jump_intensity = exp(par["llambda"]),
                                mu=par["mu"], nu=exp(par["lnu"]),
                                seed=seeds[i])
