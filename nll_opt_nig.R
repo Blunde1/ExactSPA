@@ -2,6 +2,8 @@
 # Distribution: Normal inverse Gaussian
 # 01.04.2018
 
+library(ExactSPA)
+
 # Set parameters
 chi = 3.0e-4; psi=1e3; mu=-3e-4; gamma=2
 par <- c(lchi=log(chi), lpsi=log(psi), mu=mu, gamma=gamma)
@@ -42,53 +44,37 @@ gamma.ests <- sapply(1:length(opt.list), function(i)opt.list[[i]]$par[4])
 
 par(mfrow=c(2,2))
 
-plot(density(chi.ests),col="blue", main="r estimates")
+plot(density(chi.ests),col="blue", main="chi estimates")
 hist(chi.ests, freq = FALSE, add=T)
 abline(v=exp(par["lchi"]),col="red",lwd=3)
-abline(v=meanexp((r.ests)),col="green",lwd=2)
-legend("topright",legend = c("Histogram","Kernel", "True par", "Avg. par"),
-       col=c("black","blue","red","green"),
+abline(v=mean(chi.ests),col="green",lwd=2)
+legend("topright",legend = c("Kernel","Histogram", "True val", "Avg. est."),
+       col=c("blue", "black","red","green"),
        lwd=c(1,1,3,2))
 
-plot(density(sigma.ests),col="blue",main="sigma estimates")
-hist(sigma.ests, freq = FALSE,add=T)
-abline(v=exp(par["lsigma"]),col="red",lwd=3)
-abline(v=mean(sigma.ests), col="green", lwd=2)
-legend("topright",legend = c("Histogram","Kernel", "True par", "Avg. par"),
-       col=c("black","blue","red","green"),
-       lwd=c(1,1,3,2))
-
-plot(density(jump_intensity.ests),col="blue", main="lambda estimates")
-hist(jump_intensity.ests, freq = FALSE,add=T)
-abline(v=exp(par["llambda"]),col="red", lwd=3)
-abline(v=mean(jump_intensity.ests), col="green", lwd=2)
-legend("topright",legend = c("Histogram","Kernel", "True par", "Avg. par"),
-       col=c("black","blue","red","green"),
+plot(density(psi.ests),col="blue", main="psi estimates")
+hist(psi.ests, freq = FALSE, add=T)
+abline(v=exp(par["lpsi"]),col="red",lwd=3)
+abline(v=mean(psi.ests),col="green",lwd=2)
+legend("topright",legend = c("Kernel","Histogram", "True val", "Avg. est."),
+       col=c("blue", "black","red","green"),
        lwd=c(1,1,3,2))
 
 plot(density(mu.ests),col="blue", main="mu estimates")
 hist(mu.ests, freq = FALSE, add=T)
-abline(v=par["mu"],col="red", lwd=3)
-abline(v=mean(mu.ests), col="green", lwd=2)
-legend("topright",legend = c("Histogram","Kernel", "True par", "Avg. par"),
-       col=c("black","blue","red","green"),
+abline(v=par["mu"],col="red",lwd=3)
+abline(v=mean(mu.ests),col="green",lwd=2)
+legend("topright",legend = c("Kernel","Histogram", "True val", "Avg. est."),
+       col=c("blue", "black","red","green"),
        lwd=c(1,1,3,2))
 
-
-plot(density(nu.ests),col="blue", main="nu estimates")
-hist(nu.ests, freq = FALSE, add=T)
-abline(v=exp(par["lnu"]),col="red", lwd=3)
-abline(v=mean(nu.ests), col="green", lwd=2)
-legend("topright",legend = c("Histogram","Kernel", "True par", "Avg. par"),
-       col=c("black","blue","red","green"),
+plot(density(gamma.ests),col="blue", main="gamma estimates")
+hist(gamma.ests, freq = FALSE, add=T)
+abline(v=exp(par["gamma"]),col="red",lwd=3)
+abline(v=mean(gamma.ests),col="green",lwd=2)
+legend("topright",legend = c("Kernel","Histogram", "True val", "Avg. est."),
+       col=c("blue", "black","red","green"),
        lwd=c(1,1,3,2))
 
-par(mfrow=c(1,1))
-
-mean(kappa.ests)
-sd(kappa.ests)
-mean(alpha.ests)
-sd(alpha.ests)
-mean(exp(sigma.ests))
 
 par(mfrow=c(1,1))
