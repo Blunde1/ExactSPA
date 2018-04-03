@@ -4,9 +4,12 @@ Title: What the Package Does (Title Case)
 Version: 0.3.0
 Author: Berent Ånund Strømnes Lunde
 Maintainer: berent.a.lunde@uis.no
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Description: Calculates densities from characteristic functions with a modified inversion algorithm.
+    The inversion algorithm can be viewed in two ways
+    1) Optimising the IFT integrand for good behaviour before integration (allowed due to Cauchy integral theorem).
+    2) Exactly adjusting the saddlepoint approximation.
+    In either case, the result is a saddlepoint adjusted inversion algorithm.
+License: Currently not licensed.
 Encoding: UTF-8
 LazyData: true
 Imports: Rcpp (>= 0.12.13)
