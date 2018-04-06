@@ -7,8 +7,8 @@
 using namespace Rcpp;
 
 // nll_mjd
-Rcpp::List nll_mjd(NumericVector X, double dt, double r, double lsigma, double llambda, double mu, double lnu, double length, double n);
-RcppExport SEXP _ExactSPA_nll_mjd(SEXP XSEXP, SEXP dtSEXP, SEXP rSEXP, SEXP lsigmaSEXP, SEXP llambdaSEXP, SEXP muSEXP, SEXP lnuSEXP, SEXP lengthSEXP, SEXP nSEXP) {
+Rcpp::List nll_mjd(NumericVector X, double dt, double r, double lsigma, double llambda, double mu, double lnu, double length, double n, int ift_type);
+RcppExport SEXP _ExactSPA_nll_mjd(SEXP XSEXP, SEXP dtSEXP, SEXP rSEXP, SEXP lsigmaSEXP, SEXP llambdaSEXP, SEXP muSEXP, SEXP lnuSEXP, SEXP lengthSEXP, SEXP nSEXP, SEXP ift_typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -21,13 +21,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type lnu(lnuSEXP);
     Rcpp::traits::input_parameter< double >::type length(lengthSEXP);
     Rcpp::traits::input_parameter< double >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(nll_mjd(X, dt, r, lsigma, llambda, mu, lnu, length, n));
+    Rcpp::traits::input_parameter< int >::type ift_type(ift_typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(nll_mjd(X, dt, r, lsigma, llambda, mu, lnu, length, n, ift_type));
     return rcpp_result_gen;
 END_RCPP
 }
 // nll_nchisq
-Rcpp::List nll_nchisq(NumericVector X, double ldf, double lncp, double length, double n);
-RcppExport SEXP _ExactSPA_nll_nchisq(SEXP XSEXP, SEXP ldfSEXP, SEXP lncpSEXP, SEXP lengthSEXP, SEXP nSEXP) {
+Rcpp::List nll_nchisq(NumericVector X, double ldf, double lncp, double length, double n, int ift_type);
+RcppExport SEXP _ExactSPA_nll_nchisq(SEXP XSEXP, SEXP ldfSEXP, SEXP lncpSEXP, SEXP lengthSEXP, SEXP nSEXP, SEXP ift_typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -36,13 +37,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type lncp(lncpSEXP);
     Rcpp::traits::input_parameter< double >::type length(lengthSEXP);
     Rcpp::traits::input_parameter< double >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(nll_nchisq(X, ldf, lncp, length, n));
+    Rcpp::traits::input_parameter< int >::type ift_type(ift_typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(nll_nchisq(X, ldf, lncp, length, n, ift_type));
     return rcpp_result_gen;
 END_RCPP
 }
 // nll_nig
-Rcpp::List nll_nig(NumericVector X, double lchi, double lpsi, double mu, double gamma, double length, double n);
-RcppExport SEXP _ExactSPA_nll_nig(SEXP XSEXP, SEXP lchiSEXP, SEXP lpsiSEXP, SEXP muSEXP, SEXP gammaSEXP, SEXP lengthSEXP, SEXP nSEXP) {
+Rcpp::List nll_nig(NumericVector X, double lchi, double lpsi, double mu, double gamma, double length, double n, int ift_type);
+RcppExport SEXP _ExactSPA_nll_nig(SEXP XSEXP, SEXP lchiSEXP, SEXP lpsiSEXP, SEXP muSEXP, SEXP gammaSEXP, SEXP lengthSEXP, SEXP nSEXP, SEXP ift_typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -53,15 +55,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type gamma(gammaSEXP);
     Rcpp::traits::input_parameter< double >::type length(lengthSEXP);
     Rcpp::traits::input_parameter< double >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(nll_nig(X, lchi, lpsi, mu, gamma, length, n));
+    Rcpp::traits::input_parameter< int >::type ift_type(ift_typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(nll_nig(X, lchi, lpsi, mu, gamma, length, n, ift_type));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_ExactSPA_nll_mjd", (DL_FUNC) &_ExactSPA_nll_mjd, 9},
-    {"_ExactSPA_nll_nchisq", (DL_FUNC) &_ExactSPA_nll_nchisq, 5},
-    {"_ExactSPA_nll_nig", (DL_FUNC) &_ExactSPA_nll_nig, 7},
+    {"_ExactSPA_nll_mjd", (DL_FUNC) &_ExactSPA_nll_mjd, 10},
+    {"_ExactSPA_nll_nchisq", (DL_FUNC) &_ExactSPA_nll_nchisq, 6},
+    {"_ExactSPA_nll_nig", (DL_FUNC) &_ExactSPA_nll_nig, 8},
     {NULL, NULL, 0}
 };
 

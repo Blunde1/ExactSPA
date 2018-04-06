@@ -17,5 +17,11 @@ T log_exact_spa(T x, cgf_nig<T> cgf, T sp, lcf_stand_nig<T> lcf_stand, double le
     return lfx;
 }
 
+/* Standard spa */
+template<typename T>
+T log_standard_spa(T x, cgf_nig<T> cgf, T sp){
+    T lfx = cgf(sp) - sp*x - 0.5*(log(2*M_PI) + log(cgf.dderiv(sp)) );
+    return lfx;
+}
 
 #endif //__SADDLEPOINT_APPROXIMATION_NIG_HPP_INCLUDED__

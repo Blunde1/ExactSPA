@@ -40,6 +40,8 @@ for(i in 1:length(seeds)){
                                seed=seeds[i])
 }
 sum(which(sapply(1:length(seeds), function(i)any(is.na(mjd.list[[i]])))))
+save(mjd.list, file="mjd_data_sim.RData")
+load("mjd_data_sim.RData")
 
 # # Problematic ones
 # set.seed(4321)
@@ -52,13 +54,13 @@ sum(which(sapply(1:length(seeds), function(i)any(is.na(mjd.list[[i]])))))
 
 # Estimate parameters ####
 opt.list <- list() #par.est.list <- list()
-load("optimum_object_list_rcpp_4.RData")
+load("optlist_mjd_v1.RData")
 for(i in 1:length(mjd.list)){
     tryCatch(
         {
             cat("iter:",i,"\n")
-            opt.list[[i]] <- nlminb(par[-c(6,7)], nll_fun_mjd, nll_grad_mjd, X=log(mjd.list[[i]]), dt=time/N, control=list(trace=1))
-            save(opt.list, file="optimum_object_list_rcpp_4.RData")
+            opt.list[[i]] <- nlminb(par[-c(6,7)], nll_fun_mjd, nll_grad_mjd, type="ExactSPA", X=log(mjd.list[[i]]), dt=time/N, control=list(trace=1))
+            save(opt.list, file="optlist_mjd_v1.RData")
         },
         error=function(e){
             cat("ERROR :",conditionMessage(e), "\n")
@@ -67,6 +69,8 @@ for(i in 1:length(mjd.list)){
 }
 
 # Plot parameters ####
+load("optlist_mjd_v1.RData")
+
 r.ests <- sapply(1:length(opt.list), function(i)opt.list[[i]]$par[1])
 sigma.ests <- sapply(1:length(opt.list), function(i)exp(opt.list[[i]]$par[2]))
 jump_intensity.ests <- sapply(1:length(opt.list), function(i)exp(opt.list[[i]]$par[3]))
@@ -118,6 +122,46 @@ legend("topright",legend = c("Histogram","Kernel", "True par", "Avg. par"),
 
 par(mfrow=c(1,1))
 
+# Output format for latex table
+
+cat(format(c(
+    par[1],
+    exp(par[2:3]),
+    par[4],
+    exp(par[5])),
+    scientific=F, digits = 2),
+    sep= " & ")
+
+cat(
+    paste(
+        as.numeric(format(mean(r.ests), scientific = F, digits=3)),
+        paste("(",as.numeric(format(sd(r.ests), scientific = F, digits=3)),")", sep=""),
+        sep = " "
+    ),
+    paste(
+        as.numeric(format(mean(sigma.ests), scientific = F, digits=3)),
+        paste("(",as.numeric(format(sd(sigma.ests), scientific = F, digits=3)),")", sep=""),
+        sep = " "
+    ),
+    paste(
+        as.numeric(format(mean(jump_intensity.ests), scientific = F, digits=3)),
+        paste("(",as.numeric(format(sd(jump_intensity.ests), scientific = F, digits=3)),")", sep=""),
+        sep = " "
+    ),
+    paste(
+        as.numeric(format(mean(mu.ests), scientific = F, digits=3)),
+        paste("(",as.numeric(format(sd(mu.ests), scientific = F, digits=3)),")", sep=""),
+        sep = " "
+    ),
+    paste(
+        as.numeric(format(mean(nu.ests), scientific = F, digits=3)),
+        paste("(",as.numeric(format(sd(nu.ests), scientific = F, digits=3)),")", sep=""),
+        sep = " "
+    ),
+    sep = " & "
+)
+
+
 mean(kappa.ests)
 sd(kappa.ests)
 mean(alpha.ests)
@@ -125,3 +169,59 @@ sd(alpha.ests)
 mean(exp(sigma.ests))
 
 par(mfrow=c(1,1))
+
+# SPA
+# Estimate parameters ####
+setwd("C:/Users/Berent/Projects/it-ift/implementation v5")
+load("mjd_data_sim.RData")
+opt.list <- list() #par.est.list <- list()
+load("optlist_mjd_spa_1.RData")
+for(i in 1:length(mjd.list)){
+    tryCatch(
+        {
+            cat("iter:",i,"\n")
+            opt.list[[i]] <- nlminb(par[-c(6,7)], nll_fun_mjd, nll_grad_mjd, type="SPA",
+                                    X=log(mjd.list[[i]]), dt=time/N, control=list(trace=1))
+            save(opt.list, file="optlist_mjd_spa_1.RData")
+        },
+        error=function(e){
+            cat("ERROR :",conditionMessage(e), "\n")
+        }
+    )
+}
+
+load("optlist_mjd_spa_1.RData")
+r.ests <- sapply(1:length(opt.list), function(i)opt.list[[i]]$par[1])
+sigma.ests <- sapply(1:length(opt.list), function(i)exp(opt.list[[i]]$par[2]))
+jump_intensity.ests <- sapply(1:length(opt.list), function(i)exp(opt.list[[i]]$par[3]))
+mu.ests <- sapply(1:length(opt.list), function(i)opt.list[[i]]$par[4])
+nu.ests <- sapply(1:length(opt.list), function(i)exp(opt.list[[i]]$par[5]))
+
+cat(
+    paste(
+        as.numeric(format(mean(r.ests), scientific = F, digits=3)),
+        paste("(",as.numeric(format(sd(r.ests), scientific = F, digits=3)),")", sep=""),
+        sep = " "
+    ),
+    paste(
+        as.numeric(format(mean(sigma.ests), scientific = F, digits=3)),
+        paste("(",as.numeric(format(sd(sigma.ests), scientific = F, digits=3)),")", sep=""),
+        sep = " "
+    ),
+    paste(
+        as.numeric(format(mean(jump_intensity.ests), scientific = F, digits=3)),
+        paste("(",as.numeric(format(sd(jump_intensity.ests), scientific = F, digits=3)),")", sep=""),
+        sep = " "
+    ),
+    paste(
+        as.numeric(format(mean(mu.ests), scientific = F, digits=3)),
+        paste("(",as.numeric(format(sd(mu.ests), scientific = F, digits=3)),")", sep=""),
+        sep = " "
+    ),
+    paste(
+        as.numeric(format(mean(nu.ests), scientific = F, digits=3)),
+        paste("(",as.numeric(format(sd(nu.ests), scientific = F, digits=3)),")", sep=""),
+        sep = " "
+    ),
+    sep = " & "
+)

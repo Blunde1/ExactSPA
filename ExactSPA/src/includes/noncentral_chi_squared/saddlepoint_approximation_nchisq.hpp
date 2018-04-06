@@ -17,5 +17,12 @@ T log_exact_spa(T x, cgf_nchisq<T> cgf, T sp, lcf_stand_nchisq<T> lcf_stand, dou
     return lfx;
 }
 
+/* Standard spa */
+template<typename T>
+T log_standard_spa(T x, cgf_nchisq<T> cgf, T sp){
+    T lfx = cgf(sp) - sp*x - 0.5*(log(2*M_PI) + log(cgf.dderiv(sp)) );
+    return lfx;
+}
+
 
 #endif //__SADDLEPOINT_APPROXIMATION_NCHISQ_HPP_INCLUDED__

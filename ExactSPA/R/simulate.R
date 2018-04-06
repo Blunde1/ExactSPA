@@ -27,8 +27,9 @@ rMJD <- function(N, Time, x0, r, sigma, jump_intensity, mu, nu, seed){
 ### rchisq(n,df,ncp)
 
 # Normal Inverse Gaussian ####
-require(SuppDists)
+#install.packages("SuppDists")
 rNIG=function(n,param, seed){
+    require(SuppDists)
     set.seed(seed)
     # param[1] : chi
     # param[2] : psi
