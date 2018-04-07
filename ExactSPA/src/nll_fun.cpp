@@ -15,9 +15,15 @@ Rcpp::List nll_mjd(NumericVector X, double dt,
     double sigma = exp(lsigma), lambda = exp(llambda), nu = exp(lnu);
     cgf_mjd<double> cgf(r, sigma, lambda, mu, nu, X[0], dt);
     NumericVector sp_warmup(nobs-1);
-    for(int i=1; i<nobs; i++){
-        cgf.set_x0(X[i-1]);
-        sp_warmup[i-1] = sp_newton_opt(0.0, X[i], cgf);
+
+    switch(ift_type)
+    {
+    case 1: case 2:
+        for(int i=1; i<nobs; i++){
+            cgf.set_x0(X[i-1]);
+            sp_warmup[i-1] = sp_newton_opt(0.0, X[i], cgf);
+        }
+        break;
     }
 
     // Build nll - start taping
@@ -40,22 +46,29 @@ Rcpp::List nll_mjd(NumericVector X, double dt,
         ad_x = X[j];
         ad_cgf.set_x0(ad_x0);
 
-        // Solve inner problem
-        ad_s = sp_warmup[j-1];
-        ad_s = sp_newton_opt(ad_s, ad_x, ad_cgf, false, 2);
+        switch(ift_type)
+        {
+        case 1: case 2: // SPA versions
+            // Solve inner problem
+            ad_s = sp_warmup[j-1];
+            ad_s = sp_newton_opt(ad_s, ad_x, ad_cgf, false, 2);
 
-        switch(ift_type){
+            switch(ift_type)
+            {
+            case 1: /* Ordinary spa */
+                ad_lfx = log_standard_spa(ad_x, ad_cgf, ad_s);
+                break;
 
-        case 1: /* Ordinary spa */
-            ad_lfx = log_standard_spa(ad_x, ad_cgf, ad_s);
+            case 2: /* Saddlepoint adjusted ift */
+                // Create standardized CF
+                lcf_stand_mjd<adtype> ad_lcf_stand( ad_cgf, ad_x, ad_s );
+                // Calculate log exact spa
+                ad_lfx = log_exact_spa(ad_x, ad_cgf, ad_s, ad_lcf_stand, length, n);
+                break;
+            }
             break;
-
-        case 2: /* Saddlepoint adjusted ift */
-            // Create standardized CF
-            lcf_stand_mjd<adtype> ad_lcf_stand( ad_cgf, ad_x, ad_s );
-            // Calculate log exact spa
-            ad_lfx = log_exact_spa(ad_x, ad_cgf, ad_s, ad_lcf_stand, length, n);
-            break;
+        case 3: // Direct IFT - simpson
+            ad_lfx = log(ift_simpson(ad_cgf, ad_x, length, n));
         }
 
         ad_nll -= ad_lfx;
@@ -86,13 +99,15 @@ Rcpp::List nll_mjd(NumericVector X, double dt,
 
 /*** R
 x = seq(-0.1, .1, length.out=100)
-y <- y2 <- rep(0, length(x))
+y <- y2 <- y3 <- rep(0, length(x))
 for(i in 1:length(x)){
     y[i] <- exp(-nll_mjd(c(0,x[i]), 1/250, .08, log(.1), log(100), -.001, log(.015), 12, 64, 2)$nll)
     y2[i] <- exp(-nll_mjd(c(0,x[i]), 1/250, .08, log(.1), log(100), -.001, log(.015), 12, 64, 1)$nll)
+    y3[i] <- exp(-nll_mjd(c(0,x[i]), 1/250, .08, log(.1), log(100), -.001, log(.015), 700, 64, 3)$nll)
 }
 plot(x,y)
 lines(x,y2, col="blue")
+lines(x,y3, col="green")
     */
 
 // [[Rcpp::export]]

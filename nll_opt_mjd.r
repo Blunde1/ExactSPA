@@ -225,3 +225,59 @@ cat(
     ),
     sep = " & "
 )
+
+# SIMPSON
+# Estimate parameters ####
+setwd("C:/Users/Berent/Projects/it-ift/implementation v5")
+load("mjd_data_sim.RData")
+opt.list <- list() #par.est.list <- list()
+load("optlist_mjd_simpson.RData")
+for(i in 1:length(mjd.list)){
+    tryCatch(
+        {
+            cat("iter:",i,"\n")
+            opt.list[[i]] <- nlminb(par[-c(6,7)], nll_fun_mjd, nll_grad_mjd, type="Simpson",
+                                    X=log(mjd.list[[i]]), dt=time/N, control=list(trace=1))
+            save(opt.list, file="optlist_mjd_simpson.RData")
+        },
+        error=function(e){
+            cat("ERROR :",conditionMessage(e), "\n")
+        }
+    )
+}
+
+load("optlist_mjd_spa_1.RData")
+r.ests <- sapply(1:length(opt.list), function(i)opt.list[[i]]$par[1])
+sigma.ests <- sapply(1:length(opt.list), function(i)exp(opt.list[[i]]$par[2]))
+jump_intensity.ests <- sapply(1:length(opt.list), function(i)exp(opt.list[[i]]$par[3]))
+mu.ests <- sapply(1:length(opt.list), function(i)opt.list[[i]]$par[4])
+nu.ests <- sapply(1:length(opt.list), function(i)exp(opt.list[[i]]$par[5]))
+
+cat(
+    paste(
+        as.numeric(format(mean(r.ests), scientific = F, digits=3)),
+        paste("(",as.numeric(format(sd(r.ests), scientific = F, digits=3)),")", sep=""),
+        sep = " "
+    ),
+    paste(
+        as.numeric(format(mean(sigma.ests), scientific = F, digits=3)),
+        paste("(",as.numeric(format(sd(sigma.ests), scientific = F, digits=3)),")", sep=""),
+        sep = " "
+    ),
+    paste(
+        as.numeric(format(mean(jump_intensity.ests), scientific = F, digits=3)),
+        paste("(",as.numeric(format(sd(jump_intensity.ests), scientific = F, digits=3)),")", sep=""),
+        sep = " "
+    ),
+    paste(
+        as.numeric(format(mean(mu.ests), scientific = F, digits=3)),
+        paste("(",as.numeric(format(sd(mu.ests), scientific = F, digits=3)),")", sep=""),
+        sep = " "
+    ),
+    paste(
+        as.numeric(format(mean(nu.ests), scientific = F, digits=3)),
+        paste("(",as.numeric(format(sd(nu.ests), scientific = F, digits=3)),")", sep=""),
+        sep = " "
+    ),
+    sep = " & "
+)

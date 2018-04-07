@@ -141,3 +141,49 @@ cat(
     ),
     sep = " & "
 )
+
+# Poisson central chi mix
+# SPA ####
+nll_nchisq_r <- function(par, data){
+    -sum(log(dchisq(data, exp(par[1]), exp(par[2]), log=F)))
+}
+load("nchisq_data_sim.RData")
+df = 100
+ncp = 40
+
+# Estimate parameters
+opt.list <- list() #par.est.list <- list()
+load("optlist_nchisq_pois.RData")
+for(i in 1:length(nchisq.list)){
+    tryCatch(
+        {
+            cat("iter:",i,"\n")
+            opt.list[[i]] <- nlminb(par, nll_nchisq_r, data=nchisq.list[[i]], control=list(trace=1))
+            save(opt.list, file="optlist_nchisq_pois.RData")
+        },
+        error=function(e){
+            cat("ERROR :",conditionMessage(e), "\n")
+        }
+    )
+}
+
+# Output format for latex table
+df.ests <- sapply(1:length(opt.list), function(i)exp(opt.list[[i]]$par[1]))
+ncp.ests <- sapply(1:length(opt.list), function(i)exp(opt.list[[i]]$par[2]))
+
+cat(format(exp(par[1:2]), scientific=F, digits = 2),
+    sep= " & ")
+
+cat(
+    paste(
+        as.numeric(format(mean(df.ests), scientific = F, digits=4)),
+        paste("(",as.numeric(format(sd(df.ests), scientific = F, digits=4)),")", sep=""),
+        sep = " "
+    ),
+    paste(
+        as.numeric(format(mean(ncp.ests), scientific = F, digits=4)),
+        paste("(",as.numeric(format(sd(ncp.ests), scientific = F, digits=4)),")", sep=""),
+        sep = " "
+    ),
+    sep = " & "
+)
