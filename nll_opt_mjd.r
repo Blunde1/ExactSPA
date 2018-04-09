@@ -246,7 +246,7 @@ for(i in 1:length(mjd.list)){
     )
 }
 
-load("optlist_mjd_spa_1.RData")
+load("optlist_mjd_simpson.RData")
 r.ests <- sapply(1:length(opt.list), function(i)opt.list[[i]]$par[1])
 sigma.ests <- sapply(1:length(opt.list), function(i)exp(opt.list[[i]]$par[2]))
 jump_intensity.ests <- sapply(1:length(opt.list), function(i)exp(opt.list[[i]]$par[3]))
@@ -255,28 +255,28 @@ nu.ests <- sapply(1:length(opt.list), function(i)exp(opt.list[[i]]$par[5]))
 
 cat(
     paste(
-        as.numeric(format(mean(r.ests), scientific = F, digits=3)),
-        paste("(",as.numeric(format(sd(r.ests), scientific = F, digits=3)),")", sep=""),
+        as.numeric(format(mean(r.ests), scientific = F, digits=4)),
+        paste("(",as.numeric(format(sd(r.ests), scientific = F, digits=4)),")", sep=""),
         sep = " "
     ),
     paste(
-        as.numeric(format(mean(sigma.ests), scientific = F, digits=3)),
-        paste("(",as.numeric(format(sd(sigma.ests), scientific = F, digits=3)),")", sep=""),
+        as.numeric(format(mean(sigma.ests), scientific = F, digits=4)),
+        paste("(",as.numeric(format(sd(sigma.ests), scientific = F, digits=4)),")", sep=""),
         sep = " "
     ),
     paste(
-        as.numeric(format(mean(jump_intensity.ests), scientific = F, digits=3)),
-        paste("(",as.numeric(format(sd(jump_intensity.ests), scientific = F, digits=3)),")", sep=""),
+        as.numeric(format(mean(jump_intensity.ests), scientific = F, digits=4)),
+        paste("(",as.numeric(format(sd(jump_intensity.ests), scientific = F, digits=4)),")", sep=""),
         sep = " "
     ),
     paste(
-        as.numeric(format(mean(mu.ests), scientific = F, digits=3)),
-        paste("(",as.numeric(format(sd(mu.ests), scientific = F, digits=3)),")", sep=""),
+        as.numeric(format(mean(mu.ests), scientific = F, digits=4)),
+        paste("(",as.numeric(format(sd(mu.ests), scientific = F, digits=4)),")", sep=""),
         sep = " "
     ),
     paste(
-        as.numeric(format(mean(nu.ests), scientific = F, digits=3)),
-        paste("(",as.numeric(format(sd(nu.ests), scientific = F, digits=3)),")", sep=""),
+        as.numeric(format(mean(nu.ests), scientific = F, digits=4)),
+        paste("(",as.numeric(format(sd(nu.ests), scientific = F, digits=4)),")", sep=""),
         sep = " "
     ),
     sep = " & "
