@@ -66,7 +66,7 @@ opt$par
 opt2$par
 map
 
-llambda <- seq(2,10,length.out=50)
+llambda <- seq(2,8.5,length.out=50)
 map <- c("llambda"=0)
 par2 <- par[!names(par)%in%names(map)]
 opt.list.profile <- list()
@@ -84,3 +84,76 @@ for(i in 1:length(llambda)){
         }
     )
 }
+
+nll.val <- sapply(1:length(opt.list.profile),function(i){opt.list.profile[[i]]$objective})
+plot(llambda, nll.val)
+llambda2 <- llambda[1:40]
+plot(llambda2,nll.val[1:40])
+
+# Notices that we previously has found a local opt, not global
+par.opt <- opt.list.profile[[which.min(nll.val)]]$par
+par.opt <- c(par.opt[1:2],llambda[which.min(nll.val)], par.opt[3:4])
+opt2 <- nlminb(par.opt, nll_fun_mjd, nll_grad_mjd, X=Xt, dt=dt, control=list(trace=1))
+opt2
+opt2$par
+exp(opt2$par)
+
+# Finds spa values for llambda2
+opt.list.profile.spa <- list()
+for(i in 1:length(llambda2)){
+    tryCatch(
+        {
+            cat("iter:",i,"\n")
+            map <- c("llambda"=llambda2[i])
+            opt.list.profile.spa[[i]] <- nlminb(par2, pnll_fun_mjd, map=map, type="SPA",
+                                            X=Xt, dt=dt, control=list(trace=1))
+            save(opt.list.profile.spa, file="optlist_mjd_profile_spa.RData")
+        },
+        error=function(e){
+            cat("ERROR :",conditionMessage(e), "\n")
+        }
+    )
+}
+nll.val.spa <- sapply(1:length(opt.list.profile.spa), function(i){opt.list.profile.spa[[i]]$objective})
+plot(llambda2, -nll.val[1:40], type="b")
+lines(llambda2, -nll.val.spa, col="red")
+
+# Add a normal distribution
+nll.gbm <- function(par, X, dt){
+    mu <- par[1]; sigma <- par[2]
+    nobs <- length(X)
+    nll <- 0
+    for(i in 2:nobs){
+        nll <- nll - dnorm(X[i],
+                     X[i-1]+(mu-0.5*sigma^2)*dt,
+                     sqrt(dt)*sigma, log=TRUE)
+    }
+    return(nll)
+}
+par.gbm <- c(0.1,0.1)
+opt.gbm <- nlminb(par.gbm, nll.gbm, dt=dt, X=Xt, control=list(trace=1))
+plot(llambda2, -nll.val[1:40], type="b",ylim=c(min(c(-nll.val[1:40],-nll.val.spa,-opt.gbm$objective)),
+                                               max(c(-nll.val[1:40],-nll.val.spa,-opt.gbm$objective))))
+lines(llambda2, -nll.val.spa, col="red", type="b")
+lines(llambda2, rep(-opt.gbm$objective,length(llambda2)), col="black")
+
+# Formatted estimated parameters (for latex)
+# Global
+cat(
+    format(c(opt2$par[1],
+             exp(opt2$par[2:3]),
+             opt2$par[4],
+             exp(opt2$par[5])),
+           scientific = F, digits=4),
+    sep = " & "
+)
+
+# Local
+cat(
+    format(c(opt$par[1],
+             exp(opt$par[2:3]),
+             opt$par[4],
+             exp(opt$par[5])),
+           scientific = F, digits=4),
+    sep = " & "
+)
