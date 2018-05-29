@@ -23,9 +23,10 @@ x <-rNIG(n, c(chi, psi, mu, gamma), seed=123)
 
 map <- c(lpsi=log(100))
 par2 <- par[!names(par)%in%names(map)]
+opt <- nlminb(par, nll_fun_nig, nll_grad_nig, X=x, control = list(trace=1), type="ExactSPA")
 opt2 <- nlminb(par2, pnll_fun_nig, map=map, X=x, control=list(trace=1), type="ExactSPA")
 
-lpsi2 <- seq(4,6, length.out=30)
+lpsi2 <- seq(6,8, length.out=30)
 opt.nig.profile <- opt.nig.spa.profile <- list()
 for(i in 1:length(lpsi2)){
     cat("iter:",i,"\n")

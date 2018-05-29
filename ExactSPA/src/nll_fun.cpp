@@ -108,6 +108,8 @@ for(i in 1:length(x)){
 plot(x,y)
 lines(x,y2, col="blue")
 lines(x,y3, col="green")
+plot(x,log(y), type="b")
+lines(x,log(y3),col="red")
     */
 
 // [[Rcpp::export]]
