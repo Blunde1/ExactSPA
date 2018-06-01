@@ -98,19 +98,23 @@ Rcpp::List nll_mjd(NumericVector X, double dt,
 
 
 /*** R
-x = seq(-0.1, .1, length.out=100)
-y <- y2 <- y3 <- rep(0, length(x))
-for(i in 1:length(x)){
-    y[i] <- exp(-nll_mjd(c(0,x[i]), 1/250, .08, log(.1), log(100), -.001, log(.015), 12, 64, 2)$nll)
-    y2[i] <- exp(-nll_mjd(c(0,x[i]), 1/250, .08, log(.1), log(100), -.001, log(.015), 12, 64, 1)$nll)
-    y3[i] <- exp(-nll_mjd(c(0,x[i]), 1/250, .08, log(.1), log(100), -.001, log(.015), 700, 64, 3)$nll)
+if(FALSE){
+
+    x = seq(-0.1, .1, length.out=100)
+    y <- y2 <- y3 <- rep(0, length(x))
+    for(i in 1:length(x)){
+        y[i] <- exp(-nll_mjd(c(0,x[i]), 1/250, .08, log(.1), log(100), -.001, log(.015), 12, 64, 2)$nll)
+        y2[i] <- exp(-nll_mjd(c(0,x[i]), 1/250, .08, log(.1), log(100), -.001, log(.015), 12, 64, 1)$nll)
+        y3[i] <- exp(-nll_mjd(c(0,x[i]), 1/250, .08, log(.1), log(100), -.001, log(.015), 700, 64, 3)$nll)
+    }
+    plot(x,y)
+    lines(x,y2, col="blue")
+    lines(x,y3, col="green")
+    plot(x,log(y), type="b")
+    lines(x,log(y3),col="red")
+
 }
-plot(x,y)
-lines(x,y2, col="blue")
-lines(x,y3, col="green")
-plot(x,log(y), type="b")
-lines(x,log(y3),col="red")
-    */
+*/
 
 // [[Rcpp::export]]
 Rcpp::List nll_nchisq(NumericVector X,
@@ -183,10 +187,11 @@ Rcpp::List nll_nchisq(NumericVector X,
 }
 
 /*** R
-df = 100
-ncp = 40
-n = 1000
-x <- sort(rchisq(n, df, ncp))
+if(FALSE){
+    df = 100
+    ncp = 40
+    n = 1000
+    x <- sort(rchisq(n, df, ncp))
     hist(x, freq=F)
     curve(dchisq(x, df, ncp), add=TRUE)
 
@@ -201,7 +206,8 @@ x <- sort(rchisq(n, df, ncp))
     }
     lines(x,y,col="blue")
     lines(x,y2, col="green")
-        */
+}
+*/
 
 
 
@@ -233,23 +239,30 @@ Rcpp::List nll_nig(NumericVector X,
 
     for(int j=0; j<nobs; j++){
 
-        // solve inner problem
         ad_x = X[j];
-        ad_s = sp_warmup[j];
-        ad_s = sp_newton_opt(ad_s, ad_x, ad_cgf, false, 2);
-
+        // solve inner problem
         switch(ift_type){
-        case 1: // Ordinary spa
-            ad_lfx = log_standard_spa(ad_x, ad_cgf, ad_s);
-            break;
+        case 1: case 2: // SPA versions
+            // Solve inner problem
+            ad_s = sp_warmup[j];
+            ad_s = sp_newton_opt(ad_s, ad_x, ad_cgf, false, 2);
 
-        case 2: // Saddlepoint adjusted ift
-            // Create standardized CF
-            lcf_stand_nig<adtype> ad_lcf_stand( ad_cgf, ad_x, ad_s );
+            switch(ift_type){
+            case 1: // Ordinary spa
+                ad_lfx = log_standard_spa(ad_x, ad_cgf, ad_s);
+                break;
 
-            // Calculate log exact spa
-            ad_lfx = log_exact_spa(ad_x, ad_cgf, ad_s, ad_lcf_stand, length, n);
+            case 2: // Saddlepoint adjusted ift
+                // Create standardized CF
+                lcf_stand_nig<adtype> ad_lcf_stand( ad_cgf, ad_x, ad_s );
+
+                // Calculate log exact spa
+                ad_lfx = log_exact_spa(ad_x, ad_cgf, ad_s, ad_lcf_stand, length, n);
+                break;
+            }
             break;
+        case 3: // Direct IFT - simpson
+            ad_lfx = log(ift_simpson(ad_cgf, ad_x, length, n));
         }
 
         // Update likelihood
@@ -325,22 +338,34 @@ Rcpp::List nll_nig(NumericVector X,
 #The log-likelihood for a single observation=1 and all parameters=1 should read -0.9558895
     nll_nig(1, 0, 0, 1, 1, 20, 256, 2)
     nll_nig(1, 0, 0, 1, 1, 20, 256, 1)
+    nll_nig(1, 0, 0, 1, 1, 20, 256, 3)
 #nll_nig(x[50], log(chi), log(psi), mu, gamma, 20, 128)
         exp(-nll_nig(mean(x), log(chi), log(psi), mu, gamma, 20, 128, 2)$nll)
         exp(-nll_nig(-0.1, log(chi), log(psi), mu, gamma, 20, 128, 2)$nll)
 
         nll_nig(x, log(chi), log(psi), mu, gamma, 100, 512, 2)
+        nll_nig(x, log(chi), log(psi), mu, gamma, 1500, 252, 3)
         loglikNIG(c(log(chi), log(psi), mu, gamma), x)
-        y <- y2 <- y3 <- y4 <- rep(0, length(x))
+
+        y <- y2 <- y3 <- y4 <- y5 <- rep(0, length(x))
         for(i in 1:length(x)){
             y[i] <- exp(-nll_nig(x[i], log(chi), log(psi), mu, gamma, 50, 128, 2)$nll)
             y2[i] <- exp(-nll_nig(x[i], log(chi), log(psi), mu, gamma, 8, 128, 2)$nll)
             y3[i] <- exp(loglikNIG(c(log(chi), log(psi), mu, gamma), x[i]))
             y4[i] <- exp(-nll_nig(x[i], log(chi), log(psi), mu, gamma, 8, 128, 1)$nll)
+            y5[i] <- exp(-nll_nig(x[i], log(chi), log(psi), mu, gamma, 500, 1048, 3)$nll)
         }
         hist(x, freq=F, ylim=c(0,max(y)))
             lines(x,y,col="red")
             lines(x,y2,col="blue")
             lines(x,y3, col="green")
-            lines(x,y3, col="black", type="b")
-            */
+            lines(x,y4, col="black", type="l", lty=4)
+            lines(x, y5, lwd=2, type="l", col="red", lty=3)
+
+# testing direct simpson ift
+y5 <- rep(0, length(x))
+for(i in 1:length(x)){
+    y5[i] <- exp(-nll_nig(x[i], log(chi), log(psi), mu, gamma, 500, 1048, 3)$nll)
+}
+lines(x, y5, lwd=3, type="b", col="red")
+*/

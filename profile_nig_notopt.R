@@ -40,7 +40,6 @@ n = 200
 
 # Simulate a dataset
 set.seed(4321)
-attach(par)
 x.nig <- rNIG(n,  c(chi, psi, mu, gamma), seed=123)
 
 nll_fun_nig(par, X=x.nig)
@@ -75,14 +74,26 @@ par["gamma"] <- 15000
 nll_fun_nig(par, x.nig) # great
 
 gamma.val2 <- seq(1000, 15000, length.out=50)
-nll_espa <- nll_bessel <- numeric(length(gamma.val2))
+nll_espa <- nll_bessel <- nll_spa <- numeric(length(gamma.val2))
 for(i in 1:length(gamma.val2)){
     cat("iter: ",i)
     par["gamma"] = gamma.val2[i]
     nll_espa[i] <- nll_fun_nig(par, x.nig)
+    nll_spa[i] <- nll_fun_nig(par, x.nig, type="SPA")
     nll_bessel[i] <- loglikNIG(par, x.nig)
 }
 plot(gamma.val2, nll_espa, type="o",pch=3, lwd=2,
-     ylab="Log-likelihood", xlab=expression(gamma))
+     ylab="Negative log-likelihood", xlab=expression(gamma))
 lines(gamma.val2, nll_bessel, type="b", col="red", pch=2, lwd=2)
+lines(gamma.val2, nll_spa, lty=2, col="blue", lwd=2)
 legend("topleft", c("Exact SPA", "Bessel"), col=c("black","red"), pch=c(3,2), lwd=c(2,2))
+
+
+# add spa
+for(i in 1:length(gamma.val2)){
+    cat("iter: ",i)
+    par["gamma"] = gamma.val2[i]
+    nll_spa[i] <- nll_fun_nig(par, x.nig, type="SPA")
+#    nll_bessel[i] <- loglikNIG(par, x.nig)
+}
+

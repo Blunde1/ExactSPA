@@ -82,12 +82,20 @@ nll_fun_nig <- function(par, X, type="ExactSPA"){
     mu = par[3]
     gamma = par[4]
     if(type=="ExactSPA"){
-        nll <- nll_nig(X, lchi, lpsi, mu, gamma, 100, 512, 2)$nll
+        nll <- nll_nig(X, lchi, lpsi, mu, gamma, 100, 1024, 2)$nll
     }else if(type=="SPA"){
         nll <- nll_nig(X, lchi, lpsi, mu, gamma, 100, 512, 1)$nll
+    }else if(type=="reSPA"){
+        n <- 200
+        x_sim <- sort(rNIG(n, c(exp(lchi), exp(lpsi), mu, gamma), seed = 1234))
+        c <- sum(sapply(2:n, function(i) exp(-nll_nig(x_sim[i], lchi, lpsi, mu, gamma, 100, 512, 1)$nll)*(x_sim[i]-x_sim[i-1])))
+        cat("value of renormalisation: ", c)
+        nll <- nll_nig(X, lchi, lpsi, mu, gamma, 100, 512, 1)$nll + length(X)*log(c)
+    }else if(type=="Simpson"){
+        nll <- nll_nig(X, lchi, lpsi, mu, gamma, 1500, 252, 3)$nll
+
     }
     return(nll)
-
 }
 
 nll_grad_nig <- function(par, X, type="ExactSPA"){
@@ -99,6 +107,9 @@ nll_grad_nig <- function(par, X, type="ExactSPA"){
         res <- nll_nig(X, lchi, lpsi, mu, gamma, 100, 512, 2)
     }else if(type=="SPA"){
         res <- nll_nig(X, lchi, lpsi, mu, gamma, 100, 512, 1)
+    }else if(type=="Simpson"){
+        nll <- nll_nig(X, lchi, lpsi, mu, gamma, 1500, 252, 3)
+
     }
     c(
         res$lchi_grad, res$lpsi_grad, res$mu_grad, res$gamma_grad
