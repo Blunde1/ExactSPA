@@ -25,6 +25,7 @@ typedef adept::adouble adtype;
 #include "Merton_jump_diffusion/transform_functions_mjd.hpp"
 #include "Merton_jump_diffusion/Fourier_inversion_mjd.hpp"
 #include "Merton_jump_diffusion/saddlepoint_approximation_mjd.hpp"
+#include "temp_densities.hpp"
 
 // Noncentral Chi Square
 #include "noncentral_chi_squared/optimization_nchisq.hpp"
@@ -39,6 +40,9 @@ typedef adept::adouble adtype;
 #include "normal_inverse_gaussian/saddlepoint_approximation_nig.hpp"
 
 // Tweedie
-
+#include "Tweedie/optimization_tweedie.hpp"
+#include "Tweedie/transform_functions_tweedie.hpp"
+#include "Tweedie/Fourier_inversion_tweedie.hpp"
+#include "Tweedie/saddlepoint_approximation_tweedie.hpp"
 
 #endif // __EXACTSPA_HPP_INCLUDED__

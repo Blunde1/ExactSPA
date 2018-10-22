@@ -18,7 +18,7 @@ pnll_fun_nig <- function(par, X, map=NULL, type="ExactSPA"){
 # Set parameters
 chi = 3.0e-4; psi=1e3; mu=-3e-4; gamma=2
 par <- c(lchi=log(chi), lpsi=log(psi), mu=mu, gamma=gamma)
-n=200
+n=100
 x <-rNIG(n, c(chi, psi, mu, gamma), seed=123)
 
 map <- c(lpsi=log(100))
@@ -41,7 +41,10 @@ load("opt.nig.spa.profile.RData")
 nll.val <- sapply(1:length(opt.nig.profile), function(i){opt.nig.profile[[i]]$objective})
 nll.val.spa <- sapply(1:length(opt.nig.spa.profile), function(i){opt.nig.spa.profile[[i]]$objective})
 
-plot(lpsi2, -nll.val, type="b",ylim=c(min(c(-nll.val,-nll.val.spa)),
+plot(lpsi2, -nll.val, type="l",ylim=c(min(c(-nll.val,-nll.val.spa)),
                                      max(c(-nll.val,-nll.val.spa))))
-lines(lpsi2, -nll.val.spa, col="red", type="b")
-
+lines(lpsi2, -nll.val.spa, col="red", type="l")
+legend("bottomright", 
+       c("SP adjusted IFT", "Saddlepoint approximation"),
+       col = c("black","red"), lty=c(1,1)
+)

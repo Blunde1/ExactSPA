@@ -9,6 +9,14 @@ start_date <- "2003-01-01"; end_training <- "2005-01-01";
 #plot(DJIA,type="l")
 #save(DJIA, file="djia_01012003_01012005.RData")
 load("djia_01012003_01012005.RData")
+
+
+# new data 10.09.2018
+start_date <- "2000-01-01"; end_training <- "2008-01-01";
+DJIA<-Quandl("BCB/UDJIAD1",trim_start=start_date, trim_end=end_training)
+DJIA <- DJIA[rev(rownames(DJIA)),]
+plot(DJIA,type="l")
+
 Xt=log(DJIA$Value)
 
 # Start params
@@ -115,6 +123,7 @@ for(i in 1:length(llambda2)){
     )
 }
 nll.val.spa <- sapply(1:length(opt.list.profile.spa), function(i){opt.list.profile.spa[[i]]$objective})
+load("optlist_mjd_profile_spa.RData")
 plot(llambda2, -nll.val[1:40], type="b")
 lines(llambda2, -nll.val.spa, col="red")
 
@@ -132,10 +141,21 @@ nll.gbm <- function(par, X, dt){
 }
 par.gbm <- c(0.1,0.1)
 opt.gbm <- nlminb(par.gbm, nll.gbm, dt=dt, X=Xt, control=list(trace=1))
-plot(llambda2, -nll.val[1:40], type="b",ylim=c(min(c(-nll.val[1:40],-nll.val.spa,-opt.gbm$objective)),
-                                               max(c(-nll.val[1:40],-nll.val.spa,-opt.gbm$objective))))
-lines(llambda2, -nll.val.spa, col="red", type="b")
-lines(llambda2, rep(-opt.gbm$objective,length(llambda2)), col="black")
+
+load("optlist_mjd_profile.RData")
+load("optlist_mjd_profile_spa.RData")
+
+setwd("C:/Users/Berent/Projects/it-ift/implementation/plotting/test_plots")
+pdf("mjd_pnll.pdf", width=7, height=4+1/3)
+plot(llambda2, nll.val[1:40], type="l",ylim=c(min(c(nll.val[1:40],nll.val.spa,opt.gbm$objective)-1),
+                                               max(c(nll.val[1:40],nll.val.spa,opt.gbm$objective)+1)),
+     main="", xlab = expression(paste(log,(lambda))), ylab="Negative log-likelihood",
+     lwd=3, lty=2)
+lines(llambda2, nll.val.spa, type="l", col="red", pch=4,lwd=3, lty=1 )
+lines(llambda2, rep(opt.gbm$objective,length(llambda2)), col="blue", type="b",pch=2, lwd=2)
+legend("bottomleft", c("Exact","SPA","GBM"), lty=c(2,1,NA), col=c("black","red","blue"),
+       lwd=c(3,3,2), pch=c(NA,NA,2))
+dev.off()
 
 # Formatted estimated parameters (for latex)
 # Global

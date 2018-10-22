@@ -1,13 +1,13 @@
 // Copyright (C) 2016-2018 Berent Lunde
 
-#ifndef __OPTIMIZATION_MJD_HPP_INCLUDED__
-#define __OPTIMIZATION_MJD_HPP_INCLUDED__
+#ifndef __OPTIMIZATION_TWEEDIE_HPP_INCLUDED__
+#define __OPTIMIZATION_TWEEDIE_HPP_INCLUDED__
 
-#include "transform_functions_mjd.hpp"
+#include "transform_functions_tweedie.hpp"
 
 // Line search Newton method
 template<typename T>
-T sp_newton_opt(T s_start, T x, cgf_mjd<T>& cgf, bool check_values=true, int maxniter=1000){
+T sp_newton_opt(T s_start, T x, cgf_tweedie<T>& cgf, bool check_values=true, int maxniter=1000){
     int i;
     double alpha = 1.0;
     T EPS = 3.0e-12, f_eps = 1.0e50;
@@ -19,26 +19,25 @@ T sp_newton_opt(T s_start, T x, cgf_mjd<T>& cgf, bool check_values=true, int max
         if(check_values){
             if(isnan(cgf(s_new))){
                 alpha = 0.5*alpha;
-                //s_old = s_start; // don't go back to start, just don't update
-                //i=0;
+                s_old = s_start;
+                i=0;
             }
             else if(abs(s_new - s_old) <= EPS){
                 break;
-            }
-            else if(abs(cgf(s_new)) <= abs((cgf(s_old)) + f_eps) ){
+            } else if(cgf(s_new) <= (cgf(s_old) + f_eps) ){
                 s_old = s_new;
-            }
-            else{
+            } else{
                 alpha = 0.5*alpha;
-                //s_old = s_start;
-                //i=0;
+                s_old = s_start;
+                i=0;
             }
         } else{
             s_old=s_new;
         }
     }
+    //cout << "Iterations: " << i << endl;
     return s_new;
 }
 
 
-#endif //__OPTIMIZATION_MJD_HPP_INCLUDED__
+#endif //__OPTIMIZATION_TWEEDIE_HPP_INCLUDED__

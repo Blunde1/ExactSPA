@@ -13,3 +13,7 @@ nll_nig <- function(X, lchi, lpsi, mu, gamma, length, n, ift_type) {
     .Call(`_ExactSPA_nll_nig`, X, lchi, lpsi, mu, gamma, length, n, ift_type)
 }
 
+ldens_tweedie <- function(x, t_xi, lphi, lmu, length, n, ift_type) {
+    .Call(`_ExactSPA_ldens_tweedie`, x, t_xi, lphi, lmu, length, n, ift_type)
+}
+

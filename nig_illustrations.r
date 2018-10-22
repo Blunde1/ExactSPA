@@ -6,6 +6,7 @@ library(Rcpp)
 Rcpp::sourceCpp('nig_illustrations.cpp')
 library(ExactSPA)
 
+# # # DEPRECATED - SEE nig_HighLowDens_ReCF.r # # # 
 
 # NIG RE CF STANDEXPTILT ####
 n <- 10000
@@ -18,8 +19,37 @@ m <- mean(x)
 sd <- sd(x)
 hist(x)
 
-s_val <- seq(-40,40, by=0.1)
-s_val2 <- seq(-40,40, by=1)
+s_val <- seq(0,40, by=0.1)
+s_val2 <- seq(0,40, by=0.1)
+
+# Mean and tail together
+par(mfrow=c(1,1))
+par(mar=c(5,6, 3, 3))
+y <- sapply(s_val, reStandCFNIG, x=min(x), lchi=log(chi), lpsi=log(psi), mu=mu, gamma=gamma)
+
+setwd("C:/Users/Berent/Projects/it-ift/implementation/plotting/test_plots")
+pdf("nig_stand_cf.pdf", width=7, height=4+1/3)
+plot(s_val,y, type="l", lwd=2, lty=1, pch=2,
+     main="",
+     ylab="Value",#expression(paste(Re,"[", varphi[hat(x)(tilde(tau))](s),"]")),
+     xlab=expression(s))
+# N(0,1)
+points(s_val2,sqrt(2*pi)*dnorm(s_val2), type="l", lty = 2, col="red", lwd=3)
+# mean
+y2 <- sapply(s_val, reStandCFNIG, x=mean(x), lchi=log(chi), lpsi=log(psi), mu=mu, gamma=gamma)
+points(s_val, y2, type="l", lty=3, lwd=3, col="blue")
+legend("topright", 
+       legend=c(expression(paste("High density ", Re,"[", varphi[bar(x)(tilde(tau))](s),"]")),
+                expression(paste("Low density ", Re,"[", varphi[bar(x)(tilde(tau))](s),"]")),
+                "Standard normal"),
+       col=c("blue","black","red"), pch=c(NA,NA,NA), lty=c(3,1,2), lwd=c(3,2,3)
+)
+dev.off()
+
+
+
+
+
 
 # tail
 par(mfrow=c(1,1))
@@ -28,15 +58,20 @@ y <- sapply(s_val, reStandCFNIG, x=min(x), lchi=log(chi), lpsi=log(psi), mu=mu, 
 
 setwd("C:/Users/Berent/Projects/it-ift/implementation/plotting/test_plots")
 pdf("nig_stand_cf_tail_x.pdf", width=7, height=4+1/3)
-plot(s_val,y, type="l", lwd=2, lty=4, pch=2,
+plot(s_val,y, type="l", lwd=2, lty=1, pch=2,
      main="",
      ylab="Value",#expression(paste(Re,"[", varphi[hat(x)(tilde(tau))](s),"]")),
      xlab=expression(s))
-points(s_val2,dnorm(s_val2), pch=18, col="red", lwd=2)
+# N(0,1)
+points(s_val2,dnorm(s_val2), type="l", lty = 2, col="red", lwd=3)
+# mean
+y2 <- sapply(s_val, reStandCFNIG, x=mean(x), lchi=log(chi), lpsi=log(psi), mu=mu, gamma=gamma)
+points(s_val, y2, type="l", lty=3, lwd=2, col="blue")
 legend("topright", 
-       legend=c(expression(paste(Re,"[", varphi[hat(x)(tilde(tau))](s),"]")),
+       legend=c(expression(paste("High density ", Re,"[", varphi[hat(x)(tilde(tau))](s),"]")),
+                expression(paste("Low density ", Re,"[", varphi[hat(x)(tilde(tau))](s),"]")),
                 "Standard normal"),
-       col=c("black","red"), pch=c(NA,18), lty=c(4,NA), lwd=c(2,2)
+       col=c("black","blue","red"), pch=c(NA,NA,NA), lty=c(3,1,2), lwd=c(2,2,3)
        )
 dev.off()
 
@@ -61,7 +96,7 @@ par(mfrow=c(1,1))
 range(x)
 x_min <- -0.5#min(x)
 x_max <- 0.5#max(x)
-x <- seq(x_min, x_max, length.out=300)
+x <- seq(x_min, x_max, length.out=1000)
 
 loglikNIG=function(param,data){
     #This routine requires the observations to be stored in
@@ -94,6 +129,34 @@ nll_fun_nig(par, x, type = "SPA")
 y <- exp(sapply(x, loglikNIG, param=par))
 y2 <- exp(-sapply(x, nll_fun_nig, par=par))
 yspa <- exp(-sapply(x, nll_fun_nig, par=par, type="SPA"))
+
+
+# double plot
+setwd("C:/Users/Berent/Projects/it-ift/implementation/plotting/test_plots")
+pdf("nig_exact_vs_spa.pdf", width=7, height=4+1/3)
+par(mar=c(5,6, 3, 6))
+plot(x,y, type="l", lwd=3, lty=1,xaxt="n", yaxt="n",
+     main="", xlab=expression(x), ylab="Density")
+points(x,yspa, type="l", lty=2, lwd=3, col="red")
+axis(2, ylim=range(y), col="black",lwd=1,las=1)
+axis(1)
+legend("topleft", legend=c("Exact", "SPA"), 
+       lwd=c(3,3), lty=c(1,2), col=c("black","red"))
+par(new=T)
+p0 <- y / (yspa * sqrt(2*pi))
+plot(x,p0, type="l", lwd=2, lty=3,ylim=c(0,1),#ylim=c(min(1/sqrt(2*pi), p0), max(1/sqrt(2*pi), p0)),
+     col="blue",axes=F, main="", xlab="", ylab="")
+lines(x,rep(1/sqrt(2*pi),length(x)), lty=4, col="green", lwd=2)
+axis(4, ylim=c(0,1))#ylim=c(min(p0), max(p0)))
+mtext(4, text=expression(paste(
+    p[bar(X)(hat(tau))](0)
+)), line=3)
+legend("topright", legend=c("Exact", "SPA"),
+       col=c("blue","green"),lwd=c(2,2), lty=c(3,4))
+dev.off()
+
+
+
 
 pdf("nig_exact_vs_spa.pdf", width=7, height=4+1/3)
 plot(x,y, type="l", lwd=2, lty=4,

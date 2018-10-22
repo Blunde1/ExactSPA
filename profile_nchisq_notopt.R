@@ -16,11 +16,19 @@ ncp = 40
 par <- c(ldf=log(df), lncp = log(ncp))
 n <- 500
 
+# NEW PAR
+df = 1
+ncp = 0.5
+par <- c(ldf=log(df), lncp = log(ncp))
+n = 1
+
 set.seed(123)
 x.nchisq <-rchisq(n, df, ncp)
 
 nll_nchisq_r(par, x.nchisq)
-nll_fun_nchisq(par, x.nchisq)
+nll_fun_nchisq(par, x.nchisq, "ExactSPA")
+nll_fun_nchisq(par, x.nchisq, "SPA")
+
 
 par["ldf"] <- log(10)
 ncp.val <- seq(1,10000, length.out=100)

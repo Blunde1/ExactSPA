@@ -60,11 +60,29 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// ldens_tweedie
+Rcpp::List ldens_tweedie(double x, double t_xi, double lphi, double lmu, double length, double n, int ift_type);
+RcppExport SEXP _ExactSPA_ldens_tweedie(SEXP xSEXP, SEXP t_xiSEXP, SEXP lphiSEXP, SEXP lmuSEXP, SEXP lengthSEXP, SEXP nSEXP, SEXP ift_typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type t_xi(t_xiSEXP);
+    Rcpp::traits::input_parameter< double >::type lphi(lphiSEXP);
+    Rcpp::traits::input_parameter< double >::type lmu(lmuSEXP);
+    Rcpp::traits::input_parameter< double >::type length(lengthSEXP);
+    Rcpp::traits::input_parameter< double >::type n(nSEXP);
+    Rcpp::traits::input_parameter< int >::type ift_type(ift_typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(ldens_tweedie(x, t_xi, lphi, lmu, length, n, ift_type));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ExactSPA_nll_mjd", (DL_FUNC) &_ExactSPA_nll_mjd, 10},
     {"_ExactSPA_nll_nchisq", (DL_FUNC) &_ExactSPA_nll_nchisq, 6},
     {"_ExactSPA_nll_nig", (DL_FUNC) &_ExactSPA_nll_nig, 8},
+    {"_ExactSPA_ldens_tweedie", (DL_FUNC) &_ExactSPA_ldens_tweedie, 7},
     {NULL, NULL, 0}
 };
 

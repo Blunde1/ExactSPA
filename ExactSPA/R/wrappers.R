@@ -55,7 +55,7 @@ nll_fun_nchisq <- function(par, X, type="ExactSPA"){
     ldf = par[1]
     lncp = par[2]
     if(type=="ExactSPA"){
-        nll <- nll_nchisq(X, ldf, lncp, 12, 64, 2)$nll
+        nll <- nll_nchisq(X, ldf, lncp, 25, 364, 2)$nll
     }else if(type=="SPA"){
         nll <- nll_nchisq(X, ldf, lncp, 12, 64, 1)$nll
     }
@@ -82,7 +82,7 @@ nll_fun_nig <- function(par, X, type="ExactSPA"){
     mu = par[3]
     gamma = par[4]
     if(type=="ExactSPA"){
-        nll <- nll_nig(X, lchi, lpsi, mu, gamma, 100, 1024, 2)$nll
+        nll <- nll_nig(X, lchi, lpsi, mu, gamma, 100, 512, 2)$nll
     }else if(type=="SPA"){
         nll <- nll_nig(X, lchi, lpsi, mu, gamma, 100, 512, 1)$nll
     }else if(type=="reSPA"){
@@ -92,7 +92,7 @@ nll_fun_nig <- function(par, X, type="ExactSPA"){
         cat("value of renormalisation: ", c)
         nll <- nll_nig(X, lchi, lpsi, mu, gamma, 100, 512, 1)$nll + length(X)*log(c)
     }else if(type=="Simpson"){
-        nll <- nll_nig(X, lchi, lpsi, mu, gamma, 1500, 252, 3)$nll
+        nll <- nll_nig(X, lchi, lpsi, mu, gamma, 1500, 512, 3)$nll
 
     }
     return(nll)
@@ -114,5 +114,27 @@ nll_grad_nig <- function(par, X, type="ExactSPA"){
     c(
         res$lchi_grad, res$lpsi_grad, res$mu_grad, res$gamma_grad
     )
+}
+
+nll_fun_tweedie <- function(par, X, type="ExactSPA"){
+    t_xi = par[1]
+    lpsi = par[2]
+    mu = par[3]
+    gamma = par[4]
+    if(type=="ExactSPA"){
+        nll <- nll_nig(X, lchi, lpsi, mu, gamma, 100, 1024, 2)$nll
+    }else if(type=="SPA"){
+        nll <- nll_nig(X, lchi, lpsi, mu, gamma, 100, 512, 1)$nll
+    }else if(type=="reSPA"){
+        n <- 200
+        x_sim <- sort(rNIG(n, c(exp(lchi), exp(lpsi), mu, gamma), seed = 1234))
+        c <- sum(sapply(2:n, function(i) exp(-nll_nig(x_sim[i], lchi, lpsi, mu, gamma, 100, 512, 1)$nll)*(x_sim[i]-x_sim[i-1])))
+        cat("value of renormalisation: ", c)
+        nll <- nll_nig(X, lchi, lpsi, mu, gamma, 100, 512, 1)$nll + length(X)*log(c)
+    }else if(type=="Simpson"){
+        nll <- nll_nig(X, lchi, lpsi, mu, gamma, 1500, 252, 3)$nll
+
+    }
+    return(nll)
 }
 
