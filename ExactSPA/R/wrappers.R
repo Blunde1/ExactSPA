@@ -24,7 +24,7 @@ nll_fun_mjd <- function(par, X, dt, type="ExactSPA"){
     mu = par[4]
     lnu = par[5]
     if(type=="ExactSPA"){
-        nll <- nll_mjd(X, dt, r, lsigma, llambda, mu, lnu, 12, 64, 2)$nll
+        nll <- nll_mjd(X, dt, r, lsigma, llambda, mu, lnu, 16, 128, 2)$nll
     }else if(type=="SPA"){
         nll <- nll_mjd(X, dt, r, lsigma, llambda, mu, lnu, 12, 64, 1)$nll
     }else if(type=="Simpson"){
@@ -40,7 +40,7 @@ nll_grad_mjd <- function(par, X, dt, type="ExactSPA"){
     mu = par[4]
     lnu = par[5]
     if(type=="ExactSPA"){
-        res <- nll_mjd(X, dt, r, lsigma, llambda, mu, lnu, 12, 64, 2)
+        res <- nll_mjd(X, dt, r, lsigma, llambda, mu, lnu, 16, 128, 2)
     }else if(type=="SPA"){
         res <- nll_mjd(X, dt, r, lsigma, llambda, mu, lnu, 12, 64, 1)
     }else if(type=="Simpson"){
