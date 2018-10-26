@@ -2,6 +2,8 @@
 # Berent Lunde
 # 30.08.2018
 
+# RUN WITH BATTERYSAVING ON TO NOT GET TOO FAST COMPUTATIONS :) - relativity is important
+
 # Call library
 library(ExactSPA)
 setwd("C:/Users/Berent/Projects/it-ift/implementation v5")
@@ -25,7 +27,7 @@ nll_fun_nig <- function(par, X, type="ExactSPA"){
         nll <- nll_nig(X, lchi, lpsi, mu, gamma, 100, 512, 1)$nll + length(X)*log(c)
     }else if(type=="Simpson"){
         nll <- nll_nig(X, lchi, lpsi, mu, gamma, 1500, 512, 3)$nll
-        
+
     }
     return(nll)
 }
@@ -82,7 +84,7 @@ tf_stargazer <- function(cvec){
     b <- strsplit(a, "&")
     c <- numeric(length(b))
     for(i in 1:length(b)){
-        c[i] <- paste0( format(parse_number(b[[i]][2]), scientific = T, digits = 3), 
+        c[i] <- paste0( format(parse_number(b[[i]][2]), scientific = T, digits = 3),
                         paste0("(", format(parse_number(b[[i]][3]), scientific = T, digits = 3), ")"), sep="")
     }
     return(c)
@@ -97,7 +99,7 @@ for(i in 1:nrow(clocking_tab)){
     for(j in 1:ncol(clocking_tab)){
         cat(as.character(clocking_tab[i,j]))
         if(j < ncol(clocking_tab)){
-            cat(" & ")   
+            cat(" & ")
         }else{
             cat("\\ \n")
         }

@@ -75,31 +75,33 @@ cat(
            scientific = F, digits=4),
     sep = " & "
 )
-par_orig <- c(opt$par[1],
-          exp(opt$par[2:3]),
-          opt$par[4],
-          exp(opt$par[5]))
+# par_orig <- c(opt$par[1],
+#           exp(opt$par[2:3]),
+#           opt$par[4],
+#           exp(opt$par[5]))
+par_orig <- opt$par
 
 # SD
 # build Hessian
 
-dfun_trans <- function(par_orig, Xt, dt){
-    # takes in actual parameters
-    par_trans <- c(par_orig[1], log(par_orig[2]), log(par_orig[3]), par_orig[4], log(par_orig[5]))
-    grad <- dnll_mjd_wrap(par_trans, Xt, dt)
-    dtrans <- c(1, 1/par_orig[2], 1/par_orig[3], 1, 1/par_orig[5])
-    return(dtrans * grad)
-}
-dfun_trans(par_orig, Xt, dt)
+# dfun_trans <- function(par_orig, Xt, dt){
+#     # takes in actual parameters
+#     par_trans <- c(par_orig[1], log(par_orig[2]), log(par_orig[3]), par_orig[4], log(par_orig[5]))
+#     grad <- dnll_mjd_wrap(par_trans, Xt, dt)
+#     dtrans <- c(1, 1/par_orig[2], 1/par_orig[3], 1, 1/par_orig[5])
+#     return(dtrans * grad)
+# }
+# dfun_trans(par_orig, Xt, dt)
 
-fun <- dfun_trans
+#fun <- dfun_trans
+fun <- dnll_mjd_wrap
 x = par_orig
 
 #jacobian <- function(fun, x, dt=dt, Xt=Xt){
     n <- length(x)
     J <- matrix(nrow=n, ncol=n)
     fx <- fun(par=x, X=Xt, dt=dt)
-    eps <- 1e-8
+    eps <- 1e-4
     xperturb = x
     for(i in 1:n){
         xperturb[i] <- xperturb[i] + eps
@@ -112,7 +114,7 @@ Hess <- J
 #Hess <- jacobian(fun=dfun_trans, x=opt$par)
 solve(Hess)
 SD <- sqrt(diag(solve(Hess)))
-
+SD
 
 tab_vec <- c("")
 for(i in 1:length(par)){
@@ -212,6 +214,15 @@ points(ind[-1], dlnu2, col=2, pch=2)
 
 # Optimisation
 opt_trun <- nlminb(par, nll_mjd_trun, X=Xt, dt=dt, control=list(trace=1))
+
+
+# THIS WORKS
+opt_trun <- optim(opt_trun$par, nll_mjd_trun,  X=Xt, dt=dt, hessian = TRUE)
+Hess <- opt_trun$hessian
+SD <- sqrt(diag(solve(Hess)))
+SD
+
+
 # gradient does not work...
 opt_trun
 cat(
@@ -222,31 +233,33 @@ cat(
            scientific = F, digits=3),
     sep = " & "
 )
-par_trun_orig <- c(opt_trun$par[1],
-              exp(opt_trun$par[2:3]),
-              opt_trun$par[4],
-              exp(opt_trun$par[5]))
+# par_trun_orig <- c(opt_trun$par[1],
+#               exp(opt_trun$par[2:3]),
+#               opt_trun$par[4],
+#               exp(opt_trun$par[5]))
+par_trun_orig <- opt$par
 
 # SD
 # build Hessian
 
-dfun_trans <- function(par_orig, Xt, dt){
-    # takes in actual parameters
-    par_trans <- c(par_orig[1], log(par_orig[2]), log(par_orig[3]), par_orig[4], log(par_orig[5]))
-    grad <- dnll_mjd_trun(par_trans, Xt, dt)
-    dtrans <- c(1, 1/par_orig[2], 1/par_orig[3], 1, 1/par_orig[5])
-    return(dtrans * grad)
-}
-dfun_trans(par_trun_orig, Xt, dt)
+# dfun_trans <- function(par_orig, Xt, dt){
+#     # takes in actual parameters
+#     par_trans <- c(par_orig[1], log(par_orig[2]), log(par_orig[3]), par_orig[4], log(par_orig[5]))
+#     grad <- dnll_mjd_trun(par_trans, Xt, dt)
+#     dtrans <- c(1, 1/par_orig[2], 1/par_orig[3], 1, 1/par_orig[5])
+#     return(dtrans * grad)
+# }
+# dfun_trans(par_trun_orig, Xt, dt)
 
-fun <- dfun_trans
+fun <- dnll_mjd_trun
 x = par_trun_orig
 
 #jacobian <- function(fun, x, dt=dt, Xt=Xt){
     n <- length(x)
     J <- matrix(nrow=n, ncol=n)
     fx <- fun(par=x, X=Xt, dt=dt)
-    eps <- 1e-8
+    #eps <- c(1e-4, 1e-2, 1e-2, 1e-4, 1e-1)
+    eps <- 1e-4
     xperturb = x
     for(i in 1:n){
         xperturb[i] <- xperturb[i] + eps
@@ -258,7 +271,7 @@ x = par_trun_orig
 Hess <- J
 #Hess <- jacobian(fun=dfun_trans, x=opt$par)
 solve(Hess)
-SD <- sqrt(diag(solve(Hess)))
+SD <- sqrt(abs(diag(solve(Hess))))
 SD
 
 tab_vec <- c("")
@@ -293,22 +306,22 @@ dnll_mjd_spa(opt$par, Xt, dt)
 opt_spa <- nlminb(par, nll_mjd_spa, dnll_mjd_spa, X=Xt, dt=dt, control=list(trace=1))
 opt_spa2 <- nlminb(par, nll_mjd_spa, X=Xt, dt=dt, control=list(trace=1))
 
-par_spa_orig <- c(opt_spa$par[1],
-                   exp(opt_spa$par[2:3]),
-                   opt_spa$par[4],
-                   exp(opt_spa$par[5]))
+# par_spa_orig <- c(opt_spa$par[1],
+#                    exp(opt_spa$par[2:3]),
+#                    opt_spa$par[4],
+#                    exp(opt_spa$par[5]))
+par_spa_orig <- opt_spa$par
 
+# dfun_trans <- function(par_orig, Xt, dt){
+#     # takes in actual parameters
+#     par_trans <- c(par_orig[1], log(par_orig[2]), log(par_orig[3]), par_orig[4], log(par_orig[5]))
+#     grad <- dnll_mjd_spa(par_trans, Xt, dt)
+#     dtrans <- c(1, 1/par_orig[2], 1/par_orig[3], 1, 1/par_orig[5])
+#     return(dtrans * grad)
+# }
+# dfun_trans(par_spa_orig, Xt, dt)
 
-dfun_trans <- function(par_orig, Xt, dt){
-    # takes in actual parameters
-    par_trans <- c(par_orig[1], log(par_orig[2]), log(par_orig[3]), par_orig[4], log(par_orig[5]))
-    grad <- dnll_mjd_spa(par_trans, Xt, dt)
-    dtrans <- c(1, 1/par_orig[2], 1/par_orig[3], 1, 1/par_orig[5])
-    return(dtrans * grad)
-}
-dfun_trans(par_spa_orig, Xt, dt)
-
-fun <- dfun_trans
+fun <- dnll_mjd_spa
 x = par_spa_orig
 
 #jacobian <- function(fun, x, dt=dt, Xt=Xt){
@@ -338,3 +351,30 @@ for(i in 1:length(par)){
                       , sep ="")
 }
 tab_vec
+
+
+# GAUSSIAN GBM
+nll.gbm <- function(par, X, dt){
+    mu <- par[1]; sigma <- exp(par[2])
+    nobs <- length(X)
+    nll <- 0
+    for(i in 2:nobs){
+        nll <- nll - dnorm(X[i],
+                           X[i-1]+(mu-0.5*sigma^2)*dt,
+                           sqrt(dt)*sigma, log=TRUE)
+    }
+    return(nll)
+}
+par.gbm <- c(0.1,log(0.1))
+opt.gbm <- optim(par.gbm, nll.gbm, dt=dt, X=Xt, control=list(trace=1), hessian = TRUE)
+ghess <- opt.gbm$hessian
+gSD <- sqrt(diag(solve(ghess)))
+gSD
+par_gbm <- opt.gbm$par
+tab_vec <- c("")
+for(i in 1:length(par_gbm)){
+    tab_vec <- paste0(tab_vec,
+                      cat(format(par_gbm[i], scientific = F, digits=3)),
+                      cat(" (", format(gSD[i], scientific = F, digits=3), ") & ", sep="")
+                      , sep ="")
+}

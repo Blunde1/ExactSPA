@@ -45,7 +45,7 @@ nll_mjd_wrap <- function(par, X, dt){
 }
 
 nll_mjd_trun <- function(par, X, dt){
-    
+
     r = par[1]
     lsigma = par[2]
     sigma <- exp(lsigma)
@@ -54,9 +54,9 @@ nll_mjd_trun <- function(par, X, dt){
     mu = par[4]
     lnu = par[5]
     nu <- exp(lnu)
-    
+
     k <- exp(mu + 0.5*nu^2) - 1
-    
+
     # Calculate weights until P(jump) < 1e-12
     # But maximum 5 jumps
     n <- length(X)
@@ -68,8 +68,8 @@ nll_mjd_trun <- function(par, X, dt){
             w <- dpois(i, lambda*dt)
             if(w < 1e-14) break
             #cat(w, " - ", prob, "\n")
-            prob <- prob + w * dnorm(X[j], 
-                                     X[j-1] + (r - sigma^2/2 - lambda*k)*dt + i*mu, 
+            prob <- prob + w * dnorm(X[j],
+                                     X[j-1] + (r - sigma^2/2 - lambda*k)*dt + i*mu,
                                      sqrt(dt*sigma^2 + i*nu^2))
         }
         nll <- nll - log(prob)
@@ -252,6 +252,7 @@ nll.gbm <- function(par, X, dt){
 }
 par.gbm <- c(0.1,0.1)
 opt.gbm <- nlminb(par.gbm, nll.gbm, dt=dt, X=Xt, control=list(trace=1))
+
 
 setwd("C:/Users/Berent/Projects/it-ift/implementation v5")
 
