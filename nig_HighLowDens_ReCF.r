@@ -27,11 +27,12 @@ par(mfrow=c(1,1))
 par(mar=c(5,6, 3, 3))
 y <- sapply(s_val, reStandCFNIG, x=lDensX, lchi=log(chi), lpsi=log(psi), mu=mu, gamma=gamma)
 
+library(latex2exp)
 setwd("C:/Users/Berent/Projects/it-ift/implementation/plotting/test_plots")
 pdf("nig_stand_cf3.pdf", width=7, height=4+1/3)
 plot(s_val,y, type="l", lwd=2, lty=1, pch=2,
      main="",
-     ylab=expression(paste(Re,"[", varphi[bar(x)(tilde(tau))](s),"]")),
+     ylab=expression(paste(Re,"[", varphi[bar(x)(hat(tau))](s),"]")),
      xlab=expression(s))
 # N(0,1)
 points(s_val2,sqrt(2*pi)*dnorm(s_val2), type="l", lty = 2, col="red", lwd=3)
@@ -45,9 +46,7 @@ points(s_val, y2, type="l", lty=3, lwd=3, col="blue")
 #        col=c("blue","black","red"), pch=c(NA,NA,NA), lty=c(3,1,2), lwd=c(3,2,3)
 # )
 legend("topright", 
-       legend=c(expression(paste("High density ", X)),
-                expression(paste("Low density ", X)),
-                "Standard normal"),
+       legend=c(TeX("High density $x_0$"), TeX("Low density $x_0$"), TeX("$exp(-0.5s^2)$")),
        col=c("blue","black","red"), pch=c(NA,NA,NA), lty=c(3,1,2), lwd=c(3,2,3)
 )
 dev.off()

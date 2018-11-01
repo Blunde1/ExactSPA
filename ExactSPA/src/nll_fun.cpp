@@ -71,7 +71,12 @@ Rcpp::List nll_mjd(NumericVector X, double dt,
             }
             break;
         case 3: // Direct IFT - simpson
-            ad_lfx = log(ift_simpson(ad_cgf, ad_x, length, n));
+            ad_fx = ift_simpson(ad_cgf, ad_x, length, n);
+            if(ad_fx > 1.0e-100){
+                ad_lfx = log(ad_fx);
+            }else{
+                ad_lfx = log(1.0e-14);
+            }
             break;
         case 4: // Truncated
             int maxjumps = 20;
@@ -253,6 +258,7 @@ Rcpp::List nll_nig(NumericVector X,
     adept::Stack stack;
     adtype ad_lchi=lchi, ad_lpsi=lpsi, ad_mu=mu, ad_gamma=gamma;
     adtype ad_lfx=0.0, ad_nll=0.0, ad_x=X[0], ad_s=0.0;
+    adtype ad_fx = 0.0;
     stack.new_recording();
 
     adtype ad_chi=exp(ad_lchi), ad_psi=exp(ad_lpsi);
@@ -283,7 +289,17 @@ Rcpp::List nll_nig(NumericVector X,
             }
             break;
         case 3: // Direct IFT - simpson
-            ad_lfx = log(ift_simpson(ad_cgf, ad_x, length, n));
+            ad_fx = ift_simpson(ad_cgf, ad_x, length, n);
+            if(ad_fx > 1.0e-100){
+                ad_lfx = log(ad_fx);
+            }else{
+                ad_lfx = log(1.0e-14);
+            }
+            // ad_lfx = max()
+            // ad_lfx = log(ift_simpson(ad_cgf, ad_x, length, n));
+            // if(!isfinite(ad_lfx)){
+            //     ad_lfx = log(1.0e-100);
+            // }
         }
 
         // Update likelihood

@@ -156,6 +156,36 @@ legend("topright", legend=c("Exact", "SPA"),
 dev.off()
 
 
+# new version 29.10.2018
+# two plots
+setwd("C:/Users/Berent/Projects/it-ift/implementation/plotting/test_plots")
+pdf("nig_exact_vs_spa_2plot.pdf", width=9, height=6)
+par(mar=c(5, 4, 4, 2) + 0.1) # default
+par(mfrow=c(1,2))
+plot(x,y, type="l", lwd=3, lty=1,xaxt="n", yaxt="n",
+     main="", xlab=TeX("$x$"), ylab="Density")
+points(x,yspa, type="l", lty=2, lwd=3, col="red")
+axis(2, ylim=range(y), col="black",lwd=1,las=1)
+axis(1)
+legend("topleft", legend=c("Exact", "SPA"), 
+       lwd=c(3,3), lty=c(1,2), col=c("black","red"))
+p0 <- y / (yspa * sqrt(2*pi))
+plot(x,p0, type="l", lwd=3, lty=1,ylim=c(min(1/sqrt(2*pi), p0), max(1/sqrt(2*pi), p0)),
+     col=1,axes=T, 
+     main="", 
+     xlab= TeX("x"),
+     ylab= TeX("$p_{\\bar{X}(\\hat{\\tau})}(0)$")
+)
+points(x,rep(1/sqrt(2*pi),length(x)), 
+       type="l", lty=2, lwd=3, col="red")
+legend("topright", legend=c("Exact", "SPA"),
+       col=c("black","red"),lwd=c(3,3), lty=c(1,2))
+dev.off()
+
+
+
+
+
 
 
 pdf("nig_exact_vs_spa.pdf", width=7, height=4+1/3)

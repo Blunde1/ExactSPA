@@ -96,15 +96,25 @@ nll_integrand <- function(x, ltheta_est, ltheta_true, type="ExactSPA"){
 
 nll_expected <- function(ltheta_est, ltheta_true, type="ExactSPA"){
     
-    # Simulate to find range
-    nsim <- 10000
+    # mu +- range
     vw <- exp(ltheta_true)
     chi <- psi <- 1/vw
     mu <- gamma <- 0
     par <- c(lchi=log(chi), lpsi=log(psi), mu=mu, gamma=gamma)
-    x.nig <- rNIG(nsim,  c(chi, psi, mu, gamma), seed=123)
-    lower <- min(x.nig)
-    upper <- max(x.nig)
+    EX <- mu + sqrt(chi/psi)*gamma
+    VarX <- sqrt(chi/psi) + sqrt(chi/psi^3)*gamma^2
+    lower <- EX - 12*sqrt(VarX)
+    upper <- EX + 12*sqrt(VarX)
+    
+    # # Simulate to find range
+    # nsim <- 10000
+    # vw <- exp(ltheta_true)
+    # chi <- psi <- 1/vw
+    # mu <- gamma <- 0
+    # par <- c(lchi=log(chi), lpsi=log(psi), mu=mu, gamma=gamma)
+    # x.nig <- rNIG(nsim,  c(chi, psi, mu, gamma), seed=123)
+    # lower <- min(x.nig)
+    # upper <- max(x.nig)
     
     # Calculate integrand over range
     m <- 200
@@ -163,23 +173,27 @@ for(i in 1:length(theta.grid)){
     nll.spa.theta[i] <- exp(opt.spa$par)
 }
 
+par(mar=c(5, 4, 4, 2) + 0.1)
+
+library(latex2exp)
 # Plot results parameters
 if(FALSE){
     setwd("C:/Users/Berent/Projects/it-ift/implementation/plotting/test_plots")
     pdf("spa_to_gauss_nig_par.pdf", width=8, height=5)
 }
 plot(theta.grid, nll.exact.theta, ylim=range(nll.exact.theta, nll.spa.theta), 
-     #main="NIG likelihood VS IG variance",
-     xlab="Inverse Gaussian variance", ylab="Inverse Gaussian variance estimate", 
-     type="b", col=1, pch=1, lwd=3, lty=1)
-points(theta.grid, nll.spa.theta, type="l", col=2, pch=2, lwd=3, lty=2)
+     xlab=TeX("$\\theta_0$"), ylab="",#ylab=TeX("$\\hat{\\theta}(\\theta_0)$"), 
+     type="l", col=1, pch=1, lwd=4, lty=1)
+mtext(2, text=TeX("$\\hat{\\theta}(\\theta_0)$"), line=2.5)
+lines(theta.grid, nll.spa.theta, type="l", col=3, pch=NA, lwd=2, lty=1)
 legend("topleft", c("Saddlepoint adjusted IFT", "Saddlepoint approximation"),
-       lty=c(1,2), col=1:2, pch=c(1,NA), lwd=c(3,3))
+       lty=c(1,1), col=c(1,3), pch=c(NA,NA), lwd=c(4,2))
 if(FALSE){
     dev.off()
 }
 
-
+legend("bottomleft", c("Saddlepoint adjusted IFT", "Bessel implementation", "Saddlepoint approximation", "Simpson IFT"),
+       col=1:4, pch=c(NA,2,NA,NA), lwd=c(4,2,2,2), lty=c(1,NA,1,2))
 
 # Plot results likelihood
 if(FALSE){

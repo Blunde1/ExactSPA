@@ -92,7 +92,7 @@ nll_fun_nig <- function(par, X, type="ExactSPA"){
         cat("value of renormalisation: ", c)
         nll <- nll_nig(X, lchi, lpsi, mu, gamma, 100, 512, 1)$nll + length(X)*log(c)
     }else if(type=="Simpson"){
-        nll <- nll_nig(X, lchi, lpsi, mu, gamma, 1500, 512, 3)$nll
+        nll <- nll_nig(X, lchi, lpsi, mu, gamma, 150, 512, 3)$nll
 
     }
     return(nll)
