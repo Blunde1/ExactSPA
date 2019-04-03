@@ -192,7 +192,7 @@ for(i in 1:length(mu.val3)){
 
 library(latex2exp)
 setwd("C:/Users/Berent/Projects/it-ift/implementation/plotting/test_plots")
-pdf("nig_spafail_iftfail3.pdf", width=15, height=7)
+pdf("nig_spafail_iftfail4.pdf", width=12, height=6)
 
 par(mfrow=c(1,2))
 
@@ -210,8 +210,8 @@ plot(mu.val3, nll_espa_mu, type="l",pch=3, lwd=4,
 lines(mu.val3, nll_bessel_mu, type="p",col=2, pch=2, lwd=2)
 lines(mu.val3, nll_spa_mu, type="l", lty=1, col=3, lwd=2)
 lines(mu.val3, nll_simpson_mu, type="l", lty=2, col=4, lwd=2)
-legend("bottomleft", c("Saddlepoint adjusted IFT", "Bessel implementation", "Saddlepoint approximation", "Simpson IFT"),
-       col=1:4, pch=c(NA,2,NA,NA), lwd=c(4,2,2,2), lty=c(1,NA,1,2))
+#legend("bottomleft", c("Saddlepoint adjusted IFT", "Bessel implementation", "Saddlepoint approximation", "Simpson IFT"),
+#       col=1:4, pch=c(NA,2,NA,NA), lwd=c(4,2,2,2), lty=c(1,NA,1,2))
 
 dev.off()
 

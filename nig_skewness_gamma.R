@@ -51,3 +51,16 @@ VarX <- sqrt(chi/psi) + sqrt(chi/psi^3)*gamma^2
 x <- seq(EX-8*sqrt(VarX), EX+8*sqrt(VarX), length.out=50)
 y <- exp(-sapply(x, loglikNIG, param=par))
 plot(x,y, main=TeX("$\\gamma = 150$"))
+
+
+# IG variance = 10
+par(mfrow=c(1,1))
+vw <- 0.1
+chi <- psi <- 1/vw
+mu <- gamma <- 0
+par <- c(lchi=log(chi), lpsi=log(psi), mu=mu, gamma=gamma)
+EX <- mu + sqrt(chi/psi)*gamma
+VarX <- sqrt(chi/psi) + sqrt(chi/psi^3)*gamma^2
+x <- seq(EX-8*sqrt(VarX), EX+12*sqrt(VarX), length.out=300)
+y <- exp(-sapply(x, loglikNIG, param=par))
+plot(x,y, main=TeX("$\\theta = 10$"))

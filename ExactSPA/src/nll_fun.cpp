@@ -290,7 +290,7 @@ Rcpp::List nll_nig(NumericVector X,
             break;
         case 3: // Direct IFT - simpson
             ad_fx = ift_simpson(ad_cgf, ad_x, length, n);
-            if(ad_fx > 1.0e-100){
+            if(ad_fx > 1.0e-14){
                 ad_lfx = log(ad_fx);
             }else{
                 ad_lfx = log(1.0e-14);

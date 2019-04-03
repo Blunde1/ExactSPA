@@ -20,6 +20,7 @@ library(ExactSPA)
 setwd("C:/Users/Berent/Projects/it-ift/implementation v5")
 ExactSPA::hello()
 
+
 # BESSEL ####
 loglikNIG=function(param,data){
     #This routine requires the observations to be stored in
@@ -47,6 +48,9 @@ loglikNIG=function(param,data){
     return(loglik)
 }
 
+c(100, 512) # IG: 0.1, 1
+c(300, 1024) # IG: 3, 5
+c(1000, 2048) # IG: 10
 # Likelihood wrappers
 nll_nig_locked <- function(ltheta, X, type="ExactSPA"){
     VarW <- exp(ltheta)
@@ -93,6 +97,8 @@ nll_integrand <- function(x, ltheta_est, ltheta_true, type="ExactSPA"){
     return(res)
 
 }
+nll_integrand(0, log(2), log(2), "ExactSPA")
+
 
 nll_expected <- function(ltheta_est, ltheta_true, type="ExactSPA"){
     
@@ -118,15 +124,38 @@ nll_expected <- function(ltheta_est, ltheta_true, type="ExactSPA"){
     
     # Calculate integrand over range
     m <- 200
-    dx <- (upper-lower)/m
-    val <- numeric(m)
-    for(i in 0:(m-1)){
-        val[i+1] <- nll_integrand(x=lower + i*dx, 
-                                  ltheta_est = ltheta_est, 
-                                  ltheta_true=ltheta_true, 
-                                  type=type) *
-            dx
+    # dx <- (upper-lower)/m
+    # val <- numeric(m)
+    # for(i in 0:(m-1)){
+    #     val[i+1] <- nll_integrand(x=lower + i*dx,
+    #                               ltheta_est = ltheta_est,
+    #                               ltheta_true=ltheta_true,
+    #                               type=type) *
+    #         dx
+    # }
+    
+    h <- (upper-lower)/m
+    xj <- seq.int(lower, upper, length.out = m + 1)
+    xj <- xj[-1]
+    xj <- xj[-length(xj)]
+    val <- numeric(m+1)
+    
+    val[1] <- nll_integrand(x=lower, ltheta_est = ltheta_est, ltheta_true=ltheta_true, type=type)
+    for(i in seq.int(2, length(xj), 2)){
+        val[i+1] <- 2*nll_integrand(x=xj[i], 
+                                           ltheta_est = ltheta_est, 
+                                           ltheta_true=ltheta_true, 
+                                           type=type)
     }
+    for(i in seq.int(1, length(xj), 2)){
+        val[i+1] <- 4*nll_integrand(x=xj[i], 
+                                           ltheta_est = ltheta_est, 
+                                           ltheta_true=ltheta_true, 
+                                           type=type)
+    }
+    val[m+1] <- nll_integrand(x=upper, ltheta_est = ltheta_est, ltheta_true=ltheta_true, type=type)
+    val <- val * h/3
+
     return(sum(val, na.rm=T))
     
 }
@@ -136,11 +165,15 @@ nll_expected(log(2), log(2), "SPA")
 nll_expected(log(2), log(2), "StandardGauss")
 
 # Check optimisation
-opt_exact <- nlminb(log(2), nll_expected, ltheta_true=log(2), control=list(trace=1))
+opt_exact <- nlminb(log(1), nll_expected, ltheta_true=log(1), control=list(trace=1))
 opt_spa <- nlminb(log(2), nll_expected, ltheta_true=log(2), type="SPA", control=list(trace=1))
 
 # Parameters
+opt_exact$par
+format(opt_exact$par, scientific = F, digits=3)
+
 exp(opt_exact$par)
+format(exp(opt_exact$par), scientific = F, digits=3)
 exp(opt_spa$par)
 
 # Objective
@@ -148,11 +181,25 @@ opt_exact$objective
 opt_spa$objective
 nll_expected(NULL, log(2), "StandardGauss")
 
+#Plot and see
+# IG variance = 10
+par(mfrow=c(1,1))
+vw <- 1
+chi <- psi <- 1/vw
+mu <- gamma <- 0
+par <- c(lchi=log(chi), lpsi=log(psi), mu=mu, gamma=gamma)
+EX <- mu + sqrt(chi/psi)*gamma
+VarX <- sqrt(chi/psi) + sqrt(chi/psi^3)*gamma^2
+x <- seq(EX-12*sqrt(VarX), EX+12*sqrt(VarX), length.out=300)
+y <- exp(-sapply(x, loglikNIG, param=par))
+plot(x,y, main=TeX("$\\theta = 10$"))
+
 
 # For different theta = varw
 
 # Show that the situation above happens for multiple simulations of VarW
-theta.grid <- seq(0.1,4, length.out = 30)
+#theta.grid <- seq(0.1,20, length.out = 30)
+theta.grid <- c(0.1, 0.2, 0.5, 1)
 nll.exact <- nll.spa <- nll.gauss <- numeric(length(theta.grid))
 nll.exact.theta <- nll.spa.theta <- nll.exact
 for(i in 1:length(theta.grid)){
@@ -173,6 +220,20 @@ for(i in 1:length(theta.grid)){
     nll.spa.theta[i] <- exp(opt.spa$par)
 }
 
+
+# Create a table
+theta.grid
+nll.exact.theta
+format(nll.exact.theta, scientific = F, digits=5)
+format(nll.exact, scientific = F, digits=5)
+format(nll.spa.theta, scientific = T, digits=3)
+format(nll.spa, scientific = F, digits=4)
+format(nll.gauss, scientific = F, digits=4)
+
+
+#idea: add likelihood values
+
+
 par(mar=c(5, 4, 4, 2) + 0.1)
 
 library(latex2exp)
@@ -192,9 +253,6 @@ if(FALSE){
     dev.off()
 }
 
-legend("bottomleft", c("Saddlepoint adjusted IFT", "Bessel implementation", "Saddlepoint approximation", "Simpson IFT"),
-       col=1:4, pch=c(NA,2,NA,NA), lwd=c(4,2,2,2), lty=c(1,NA,1,2))
-
 # Plot results likelihood
 if(FALSE){
     setwd("C:/Users/Berent/Projects/it-ift/implementation/plotting/test_plots")
@@ -211,5 +269,6 @@ legend("bottomleft", c("Saddlepoint adjusted IFT", "Saddlepoint approximation", 
 if(FALSE){
     dev.off()
 }
+
 
 

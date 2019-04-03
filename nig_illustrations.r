@@ -6,7 +6,7 @@ library(Rcpp)
 Rcpp::sourceCpp('nig_illustrations.cpp')
 library(ExactSPA)
 
-# # # DEPRECATED - SEE nig_HighLowDens_ReCF.r # # # 
+# # # DEPRECATED - SEE nig_HighLowDens_ReCF.r # # #
 
 # NIG RE CF STANDEXPTILT ####
 n <- 10000
@@ -38,7 +38,7 @@ points(s_val2,sqrt(2*pi)*dnorm(s_val2), type="l", lty = 2, col="red", lwd=3)
 # mean
 y2 <- sapply(s_val, reStandCFNIG, x=mean(x), lchi=log(chi), lpsi=log(psi), mu=mu, gamma=gamma)
 points(s_val, y2, type="l", lty=3, lwd=3, col="blue")
-legend("topright", 
+legend("topright",
        legend=c(expression(paste("High density ", Re,"[", varphi[bar(x)(tilde(tau))](s),"]")),
                 expression(paste("Low density ", Re,"[", varphi[bar(x)(tilde(tau))](s),"]")),
                 "Standard normal"),
@@ -67,7 +67,7 @@ points(s_val2,dnorm(s_val2), type="l", lty = 2, col="red", lwd=3)
 # mean
 y2 <- sapply(s_val, reStandCFNIG, x=mean(x), lchi=log(chi), lpsi=log(psi), mu=mu, gamma=gamma)
 points(s_val, y2, type="l", lty=3, lwd=2, col="blue")
-legend("topright", 
+legend("topright",
        legend=c(expression(paste("High density ", Re,"[", varphi[hat(x)(tilde(tau))](s),"]")),
                 expression(paste("Low density ", Re,"[", varphi[hat(x)(tilde(tau))](s),"]")),
                 "Standard normal"),
@@ -83,7 +83,7 @@ y <- sapply(s_val, reStandCFNIG, x=mean(x), lchi=log(chi), lpsi=log(psi), mu=mu,
 plot(s_val,y, type="l", lwd=2, lty=4,
      main="", ylab="Value", xlab=expression(s))
 points(s_val2,dnorm(s_val2), pch=18, col="red", lwd=2)
-legend("topright", 
+legend("topright",
        legend=c(expression(paste(Re,"[", varphi[hat(x)(tilde(tau))](s),"]")),
                 "Standard normal"),
        col=c("black","red"), pch=c(NA,18), lty=c(4,NA), lwd=c(2,2)
@@ -140,7 +140,7 @@ plot(x,y, type="l", lwd=3, lty=1,xaxt="n", yaxt="n",
 points(x,yspa, type="l", lty=2, lwd=3, col="red")
 axis(2, ylim=range(y), col="black",lwd=1,las=1)
 axis(1)
-legend("topleft", legend=c("Exact", "SPA"), 
+legend("topleft", legend=c("Exact", "SPA"),
        lwd=c(3,3), lty=c(1,2), col=c("black","red"))
 par(new=T)
 p0 <- y / (yspa * sqrt(2*pi))
@@ -158,25 +158,26 @@ dev.off()
 
 # new version 29.10.2018
 # two plots
+library(latex2exp)
 setwd("C:/Users/Berent/Projects/it-ift/implementation/plotting/test_plots")
 pdf("nig_exact_vs_spa_2plot.pdf", width=9, height=6)
 par(mar=c(5, 4, 4, 2) + 0.1) # default
 par(mfrow=c(1,2))
 plot(x,y, type="l", lwd=3, lty=1,xaxt="n", yaxt="n",
-     main="", xlab=TeX("$x$"), ylab="Density")
+     main="", xlab=TeX("$x_0$"), ylab="NIG density")
 points(x,yspa, type="l", lty=2, lwd=3, col="red")
 axis(2, ylim=range(y), col="black",lwd=1,las=1)
 axis(1)
-legend("topleft", legend=c("Exact", "SPA"), 
+legend("topleft", legend=c("Exact", "SPA"),
        lwd=c(3,3), lty=c(1,2), col=c("black","red"))
 p0 <- y / (yspa * sqrt(2*pi))
 plot(x,p0, type="l", lwd=3, lty=1,ylim=c(min(1/sqrt(2*pi), p0), max(1/sqrt(2*pi), p0)),
-     col=1,axes=T, 
-     main="", 
-     xlab= TeX("x"),
+     col=1,axes=T,
+     main="",
+     xlab= TeX("x_0"),
      ylab= TeX("$p_{\\bar{X}(\\hat{\\tau})}(0)$")
 )
-points(x,rep(1/sqrt(2*pi),length(x)), 
+points(x,rep(1/sqrt(2*pi),length(x)),
        type="l", lty=2, lwd=3, col="red")
 legend("topright", legend=c("Exact", "SPA"),
        col=c("black","red"),lwd=c(3,3), lty=c(1,2))
@@ -193,7 +194,7 @@ plot(x,y, type="l", lwd=2, lty=4,
      main="", xlab=expression(x), ylab="Density")
 points(x,yspa, pch=18, lwd=1, col="red")
 lines(x,y, type="l", lwd=2, lty=4) # Add one more to get black over red
-legend("topright", legend=c("Exact", "NIG SPA"), 
+legend("topright", legend=c("Exact", "NIG SPA"),
        pch=c(NA,18), lwd=c(2,1), lty=c(4,NA), col=c("black","red"))
 dev.off()
 #lines(x,y2, lty=3, lwd=2, col="blue")

@@ -260,7 +260,7 @@ load("optlist_mjd_profile_18092018.RData")
 load("optlist_mjd_profile_spa20092018.RData")
 load("optlist_mjd_profile_trun17092018.RData")
 #load("optlist_mjd_profile_smpsn18102018.RData")
-
+llambda <- seq(2,8.5,length.out=30)
 
 nll.val <- sapply(1:length(opt.list.profile),function(i){opt.list.profile[[i]]$objective})
 #nll.val.smpsn <- sapply(1:length(opt.list.profile.smpsn),function(i){opt.list.profile.smpsn[[i]]$objective})
@@ -273,18 +273,18 @@ plot(llambda2,nll.val[1:40])
 
 
 setwd("C:/Users/Berent/Projects/it-ift/implementation/plotting/test_plots")
-pdf("mjd_pnll6.pdf", width=9, height=6)
+pdf("mjd_pnll7.pdf", width=9, height=6)
 plot(llambda[-c(1,2)], nll.val[-c(1,2)],
      ylim=c(min(c(nll.val,nll.val.spa, opt.gbm$objective)-1), max(c(nll.val,nll.val.spa, opt.gbm$objective)+1)),
      main="", xlab = expression(paste(log,(lambda))), ylab="Negative log-likelihood",
      type="l", lwd=4, lty=1)
-lines(llambda[-c(1,2)], nll.val.trun[-c(1,2)], type="p", col=2, pch=2,lwd=2 )
+lines(llambda[-c(1,2)], nll.val.trun[-c(1,2)], type="p", col=5, pch=3,lwd=2 )
 lines(llambda[-c(1,2)], nll.val.spa[-c(1,2)], type="l", col=3, lwd=2, lty=1 )
-lines(llambda[-c(1,2)], rep(opt.gbm$objective,length(llambda))[-c(1,2)], col=4, type="l", lwd=2, lty=2)
+lines(llambda[-c(1,2)], rep(opt.gbm$objective,length(llambda))[-c(1,2)], col=6, type="l", lwd=2, lty=6)
 #lines(llambda[-c(1,2)], nll.val.smpsn[-c(1,2)], type="l", col=5, pch=5,lwd=3, lty=2 )
 
 legend("bottomright", c("Saddlepoint adjusted IFT", "Truncated", "Saddlepoint approximation", "Gaussian GBM"),
-       col=1:4, pch=c(NA,2,NA,NA), lwd=c(4,2,2,2), lty=c(1,NA,1,2))
+       col=c(1,5,3,6), pch=c(NA,3,NA,NA), lwd=c(4,2,2,2), lty=c(1,NA,1,6))
 dev.off()
 
 
